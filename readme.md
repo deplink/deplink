@@ -6,4 +6,4 @@
 
 <p align="center">Deplink frees you from manual downloading, building and linking dependencies.</p>
 
-<p align="center"><img src="https://github.com/deplink/deplink/blob/master/resources/images/github.png?raw=true" alt="Deplink usage example" width="550"></p>
+<p align="center"><img src="https://github.com/deplink/deplink/blob/master/resources/images/github.png?raw=true" alt="Deplink usage example" width="600"></p>
