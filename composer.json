@@ -1,0 +1,18 @@
+{
+    "name": "deplink/deplink",
+    "description": "Dependency Manager for C/C++",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wojciech Mleczek",
+            "email": "mleczek.wojtek@gmail.com"
+        }
+    ],
+    "scripts": {
+        "test": "behat"
+    },
+    "require-dev": {
+        "behat/behat": "^3.3"
+    }
+}
