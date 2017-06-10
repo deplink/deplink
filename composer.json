@@ -10,7 +10,7 @@
         }
     ],
     "scripts": {
-        "test": "php bin/build.php && behat --no-interaction",
+        "test": "behat --no-interaction",
         "build": "@composer install --no-dev && php bin/build.php"
     },
     "autoload": {
@@ -25,7 +25,8 @@
     },
     "require": {
         "php": "^5.6 || ^7.0",
-        "php-di/php-di": "^5.4"
+        "php-di/php-di": "^5.4",
+        "symfony/console": "^3.3"
     },
     "require-dev": {
         "behat/behat": "^3.3",

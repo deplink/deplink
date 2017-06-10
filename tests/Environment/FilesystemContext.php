@@ -2,9 +2,9 @@
 
 namespace Deplink\Tests\Environment;
 
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Deplink\Tests\BaseContext;
+use PHPUnit\Framework\Assert;
 
 class FilesystemContext extends BaseContext
 {
@@ -13,7 +13,8 @@ class FilesystemContext extends BaseContext
      */
     public function iAmInDirectory($dir)
     {
-        throw new PendingException();
+        $this->fs->touchDir($dir);
+        chdir($dir);
     }
 
     /**
@@ -21,7 +22,7 @@ class FilesystemContext extends BaseContext
      */
     public function iShouldHaveFile($file)
     {
-        throw new PendingException();
+        Assert::assertFileExists($file);
     }
 
     /**
@@ -29,7 +30,7 @@ class FilesystemContext extends BaseContext
      */
     public function iShouldnTHaveFile($file)
     {
-        throw new PendingException();
+        Assert::assertFileNotExists($file);
     }
 
     /**
@@ -37,7 +38,7 @@ class FilesystemContext extends BaseContext
      */
     public function thereIsFile($file)
     {
-        throw new PendingException();
+        $this->fs->touchFile($file);
     }
 
     /**
@@ -45,7 +46,10 @@ class FilesystemContext extends BaseContext
      */
     public function iShouldHaveFileWhichContains($file, $sentence)
     {
-        throw new PendingException();
+        $sentence = str_replace('\\"', '"', $sentence);
+
+        Assert::assertFileExists($file);
+        Assert::assertContains($sentence, $this->fs->readFile($file));
     }
 
     /**
@@ -53,6 +57,15 @@ class FilesystemContext extends BaseContext
      */
     public function iShouldHaveFileWithContents($file, PyStringNode $contents)
     {
-        throw new PendingException();
+        Assert::assertFileExists($file);
+        Assert::assertContains($contents->getRaw(), $this->fs->readFile($file));
+    }
+
+    /**
+     * @Given directory :dir exists
+     */
+    public function directoryExists($dir)
+    {
+        $this->fs->touchDir($dir);
     }
 }
