@@ -10,19 +10,25 @@
         }
     ],
     "scripts": {
-        "test": "behat"
+        "test": "php bin/build.php && behat --no-interaction",
+        "build": "@composer install --no-dev && php bin/build.php"
+    },
+    "autoload": {
+        "psr-4": {
+            "Deplink\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Deplink\\Tests\\": "tests/"
+        }
     },
     "require": {
+        "php": "^5.6 || ^7.0",
         "php-di/php-di": "^5.4"
     },
     "require-dev": {
         "behat/behat": "^3.3",
         "phpunit/phpunit": "^5.7"
-    },
-    "autoload": {
-        "psr-4": {
-            "Deplink\\": "src/",
-            "Deplink\\Tests\\": "tests/"
-        }
     }
 }

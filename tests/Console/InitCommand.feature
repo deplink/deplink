@@ -15,7 +15,7 @@ Feature: Init command
 
   Scenario: Specifying package name
     When I run "deplink init hello/world"
-    Then I should have file "deplink.json" which contains "\"name\": \"hello/world\"":
+    Then I should have file "deplink.json" which contains "\"name\": \"hello/world\""
 
   Scenario: Changing working directory (--working-dir option)
     Given I am in "org/package" directory

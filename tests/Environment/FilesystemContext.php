@@ -9,7 +9,7 @@ use Deplink\Tests\BaseContext;
 class FilesystemContext extends BaseContext
 {
     /**
-     * @Given /^I am in "([^"]*)" directory$/
+     * @Given I am in :file directory
      */
     public function iAmInDirectory($dir)
     {
@@ -17,7 +17,7 @@ class FilesystemContext extends BaseContext
     }
 
     /**
-     * @Then /^I should have file "([^"]*)"$/
+     * @Then I should have file :file
      */
     public function iShouldHaveFile($file)
     {
@@ -25,7 +25,7 @@ class FilesystemContext extends BaseContext
     }
 
     /**
-     * @Given /^I shouldn't have file "([^"]*)"$/
+     * @Given I shouldn't have file :file
      */
     public function iShouldnTHaveFile($file)
     {
@@ -33,7 +33,7 @@ class FilesystemContext extends BaseContext
     }
 
     /**
-     * @Given /^there is "([^"]*)" file$/
+     * @Given there is :file file
      */
     public function thereIsFile($file)
     {
@@ -41,15 +41,15 @@ class FilesystemContext extends BaseContext
     }
 
     /**
-     * @Then /^I should have file "([^"]*)" which contains "((?:[^"\\]|\\.)*)":$/
+     * @Then /^I should have file "([^"]*)" which contains "((?:[^"\\]|\\.)*)"$/
      */
-    public function iShouldHaveFileWhichContainsNameHelloWorld($file, $sentence)
+    public function iShouldHaveFileWhichContains($file, $sentence)
     {
         throw new PendingException();
     }
 
     /**
-     * @Then /^I should have file "([^"]*)" with contents:$/
+     * @Then I should have file :file with contents:
      */
     public function iShouldHaveFileWithContents($file, PyStringNode $contents)
     {

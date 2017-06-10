@@ -8,7 +8,7 @@ use Deplink\Tests\BaseContext;
 class CommandContext extends BaseContext
 {
     /**
-     * @When /^I run "((?:[^"\\]|\\.)*)"$/
+     * @When I run :cmd
      */
     public function iRun($cmd)
     {
@@ -16,7 +16,7 @@ class CommandContext extends BaseContext
     }
 
     /**
-     * @Given /^the console output should contains "([^"]*)"$/
+     * @Given the console output should contains :sentence
      */
     public function theConsoleOutputShouldContains($sentence)
     {
