@@ -23,12 +23,13 @@ class BaseContext implements Context
     public static function prepare()
     {
         $fs = new Filesystem();
-        $rootDir = __DIR__ . '/..';
-        $tempDir = __DIR__ . '/../temp';
 
-        chdir($rootDir);
-        $fs->removeDir($tempDir);
-        $fs->touchDir($tempDir);
-        chdir($tempDir);
+        // Move to the root directory.
+        chdir(__DIR__ . '/..');
+
+        // Recreate temp directory and set as working directory.
+        $fs->removeDir('temp');
+        $fs->touchDir('temp');
+        chdir('temp');
     }
 }

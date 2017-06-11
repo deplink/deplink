@@ -10,7 +10,7 @@ before_install:
   - sudo apt-get install gdb
 
 install:
-  - composer install --no-interaction --no-suggest
+  - composer install --no-interaction --no-progress --no-suggest
 
 before_script:
   - phpenv config-add .travis.php.ini
