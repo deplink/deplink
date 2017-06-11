@@ -8,7 +8,9 @@ $pharFile = ROOT_DIR . '/' . $config->output;
 
 // If archive is not deleted before creating the new one
 // then the size will only increase (incremental build).
-unlink($pharFile);
+if (file_exists($pharFile)) {
+    unlink($pharFile);
+}
 
 // Archive project directory as phar file.
 $archive = new Phar($pharFile);

@@ -23,8 +23,8 @@ class BaseContext implements Context
     public static function prepare()
     {
         $fs = new Filesystem();
-        $rootDir = realpath(__DIR__ . '/..');
-        $tempDir = realpath(__DIR__ . '/../temp');
+        $rootDir = __DIR__ . '/..';
+        $tempDir = __DIR__ . '/../temp';
 
         chdir($rootDir);
         $fs->removeDir($tempDir);
