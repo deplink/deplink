@@ -10,7 +10,7 @@
         }
     ],
     "scripts": {
-        "test": "behat --no-interaction --colors",
+        "test": "behat --no-interaction --colors --verbose",
         "build": "@composer install --no-dev && php bin/build.php"
     },
     "autoload": {

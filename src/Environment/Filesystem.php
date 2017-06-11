@@ -131,11 +131,11 @@ class Filesystem
      * Make directory if not exists.
      *
      * @param string $dir
-     * @param int $mode Permissions in octal mode.
+     * @param int $mode See http://php.net/manual/en/function.mkdir.php
      * @throws InvalidPathException
      * @throws UnknownException
      */
-    public function touchDir($dir, $mode = 0644)
+    public function touchDir($dir, $mode = 0744)
     {
         // Throw if the given path is a file.
         if ($this->isFile($dir)) {

@@ -24,12 +24,10 @@ class BaseContext implements Context
     {
         $fs = new Filesystem();
 
-        // Move to the root directory.
-        chdir(__DIR__ . '/..');
-
         // Recreate temp directory and set as working directory.
+        $fs->setWorkingDir(__DIR__ . '/..');
         $fs->removeDir('temp');
         $fs->touchDir('temp');
-        chdir('temp');
+        $fs->setWorkingDir('temp');
     }
 }
