@@ -1,0 +1,20 @@
+language: php
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+
+before_install:
+  - sudo apt-get install gcc-multilib
+  - sudo apt-get install gdb
+
+install:
+  - composer install --no-interaction --no-suggest
+
+before_script:
+  - phpenv config-add .travis.php.ini
+
+script:
+  - composer run-script test
+  - composer run-script build

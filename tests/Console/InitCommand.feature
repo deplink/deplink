@@ -46,7 +46,7 @@ Feature: Init command
     And the console output should contains "Cannot initialize package in non-empty directory"
     And command should exit with status code 1
 
-  Scenario Outline: Invalid package name information
+  Scenario Outline: Invalid package name
     When I run "deplink init <packageName>"
     And the console output should contains "Invalid '<packageName>' package name, use org/package format (use only letters, digits and dashes)"
     And command should exit with status code 1
