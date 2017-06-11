@@ -14,7 +14,7 @@ class FilesystemContext extends BaseContext
     public function iAmInDirectory($dir)
     {
         $this->fs->touchDir($dir);
-        chdir($dir);
+        $this->fs->setWorkingDir($dir);
     }
 
     /**

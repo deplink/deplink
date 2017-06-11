@@ -21,12 +21,12 @@ return [
      */
     'commands' => [
         \Deplink\Console\Commands\InitCommand::class,
+        //\Deplink\Console\Commands\InstallCommand::class,
+        //\Deplink\Console\Commands\UninstallCommand::class,
         //\Deplink\Console\Commands\BuildCommand::class,
-        //\Deplink\Console\Commands\CleanCommand::class,
         //\Deplink\Console\Commands\RebuildCommand::class,
+        //\Deplink\Console\Commands\CleanCommand::class,
         //\Deplink\Console\Commands\RunCommand::class,
         //\Deplink\Console\Commands\ScriptCommand::class,
-        //\Deplink\Console\Commands\LinkCommand::class,
-        //\Deplink\Console\Commands\UnlinkCommand::class,
     ],
 ];

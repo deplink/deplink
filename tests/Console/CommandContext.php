@@ -26,22 +26,12 @@ class CommandContext extends BaseContext
      */
     public function iRun($cmd)
     {
+        $this->output = [];
+        $this->exitCode = -1;
         $cmd = $this->replaceSelfExecution($cmd);
-        $pipes = [];
-        $pipesDescription = [
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ];
 
-        $proc = proc_open($cmd, $pipesDescription, $pipes);
-        $stdout = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-
-        $stderr = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
-
-        $this->output = $stdout . $stderr;
-        $this->exitCode = proc_close($proc);
+        exec("$cmd 2>&1", $this->output, $this->exitCode);
+        $this->output = implode(' ', $this->output);
     }
 
     /**

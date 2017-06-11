@@ -31,7 +31,7 @@ class Filesystem
         }
 
         if (!chdir($dir)) {
-            throw new InvalidPathException("Unknown exception occured while setting '$dir' as working directory");
+            throw new InvalidPathException("Unknown exception occurred while setting '$dir' as working directory");
         }
     }
 
