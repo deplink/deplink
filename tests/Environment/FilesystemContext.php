@@ -68,4 +68,29 @@ class FilesystemContext extends BaseContext
     {
         $this->fs->touchDir($dir);
     }
+
+    /**
+     * @Given file :file not exists
+     */
+    public function fileNotExists($file)
+    {
+        $this->fs->removeFile($file);
+        Assert::assertFileNotExists($file);
+    }
+
+    /**
+     * @Given the :file file should contains:
+     */
+    public function theFileShouldContains($file, PyStringNode $string)
+    {
+        $this->fs->writeFile($file, $string->getRaw());
+    }
+
+    /**
+     * @Given there is :file file with contents:
+     */
+    public function thereIsFileWithContents($file, PyStringNode $string)
+    {
+        $this->fs->writeFile($file, $string->getRaw());
+    }
 }

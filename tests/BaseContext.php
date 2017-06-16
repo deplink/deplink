@@ -12,6 +12,13 @@ class BaseContext implements Context
      */
     protected $fs;
 
+    /**
+     * Deplink root directory.
+     *
+     * @var string
+     */
+    const ROOT_DIR = __DIR__ . '/..';
+
     public function __construct()
     {
         $this->fs = new Filesystem();
@@ -35,7 +42,7 @@ class BaseContext implements Context
     {
         $fs = new Filesystem();
 
-        $fs->setWorkingDir(__DIR__ . '/..');
+        $fs->setWorkingDir(self::ROOT_DIR);
         $fs->removeDir('temp');
     }
 }

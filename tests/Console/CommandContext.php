@@ -2,6 +2,7 @@
 
 namespace Deplink\Tests\Console;
 
+use Behat\Gherkin\Node\PyStringNode;
 use Deplink\Tests\BaseContext;
 use PHPUnit\Framework\Assert;
 
@@ -35,14 +36,6 @@ class CommandContext extends BaseContext
     }
 
     /**
-     * @Given the console output should contains :sentence
-     */
-    public function theConsoleOutputShouldContains($sentence)
-    {
-        Assert::assertContains($sentence, $this->output);
-    }
-
-    /**
      * Replace deplink execution at the beginning of the command.
      *
      * @param string $cmd
@@ -69,10 +62,26 @@ class CommandContext extends BaseContext
     }
 
     /**
-     * @Given command should exit with status code :exitCode
+     * @Then command should exit with status code :exitCode
      */
     public function commandShouldExitWithStatusCode($exitCode)
     {
         Assert::assertEquals($exitCode, $this->exitCode);
+    }
+
+    /**
+     * @Then the console output should contains :sentence
+     */
+    public function theConsoleOutputShouldContains($sentence)
+    {
+        Assert::assertContains($sentence, $this->output);
+    }
+
+    /**
+     * @Then the console output should contains:
+     */
+    public function theConsoleOutputShouldContains1(PyStringNode $string)
+    {
+        Assert::assertContains($string->getRaw(), $this->output);
     }
 }

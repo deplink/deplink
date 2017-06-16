@@ -3,9 +3,11 @@ default:
       - %paths.base%/tests
 
     suites:
-        console:
+        cli:
             paths:
               - %paths.base%/tests/Console
             contexts:
               - Deplink\Tests\Console\CommandContext
               - Deplink\Tests\Environment\FilesystemContext
+              - Deplink\Tests\Packages\PackageContext
+              - Deplink\Tests\Repositories\RepositoryContext
