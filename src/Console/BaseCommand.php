@@ -26,6 +26,7 @@ abstract class BaseCommand extends Command
 
     /**
      * @param Filesystem $fs
+     * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(Filesystem $fs)
     {

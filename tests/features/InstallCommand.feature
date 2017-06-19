@@ -150,6 +150,7 @@ Feature: Install command
       """
     And command should exit with status code 1
 
+  # TODO: install newest available and compatible version
   # TODO: install locked version of the dependencies
   # TODO: install packages not listed in deplink.lock file
   # TODO: update packages which changed version constraint is inconsistent with locked version
@@ -160,8 +161,7 @@ Feature: Install command
   # TODO: delete mismatches between installed.lock and directory structure
 
   # TODO: specify new package to install
+  # TODO: install multiple libs at once
   # TODO: check packages compiler compatibility
   # TODO: check packages platform compatibility
   # TODO: check packages architecture compatibility
-
-  # TODO: install multiple libs at once

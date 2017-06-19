@@ -1,7 +1,5 @@
 <?php
 
-namespace Deplink\Tests;
-
 use Behat\Behat\Context\Context;
 use Deplink\Environment\Filesystem;
 
@@ -17,7 +15,7 @@ class BaseContext implements Context
      *
      * @var string
      */
-    const ROOT_DIR = __DIR__ . '/..';
+    const ROOT_DIR = __DIR__ . '/../../..';
 
     public function __construct()
     {

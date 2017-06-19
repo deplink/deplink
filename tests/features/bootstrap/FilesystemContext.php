@@ -1,9 +1,6 @@
 <?php
 
-namespace Deplink\Tests\Environment;
-
 use Behat\Gherkin\Node\PyStringNode;
-use Deplink\Tests\BaseContext;
 use PHPUnit\Framework\Assert;
 
 class FilesystemContext extends BaseContext

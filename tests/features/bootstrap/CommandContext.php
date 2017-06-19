@@ -1,9 +1,6 @@
 <?php
 
-namespace Deplink\Tests\Console;
-
 use Behat\Gherkin\Node\PyStringNode;
-use Deplink\Tests\BaseContext;
 use PHPUnit\Framework\Assert;
 
 class CommandContext extends BaseContext
@@ -53,7 +50,7 @@ class CommandContext extends BaseContext
         // Replace "deplink" with "php path/to/deplink.php --no-ansi",
         // the --no-ansi option removes console output formatting
         // (formatting produces special symbols which breaks assertions).
-        $deplinkCall = 'php ' . __DIR__ . '/../../bin/deplink.php --no-ansi ';
+        $deplinkCall = 'php ' . self::ROOT_DIR . '/bin/deplink.php --no-ansi ';
 
         // Replace all '/' and '\' to os-compatible path separator.
         $deplinkCall = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $deplinkCall);

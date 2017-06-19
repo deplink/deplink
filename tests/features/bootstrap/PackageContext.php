@@ -1,9 +1,6 @@
 <?php
 
-namespace Deplink\Tests\Packages;
-
 use Behat\Gherkin\Node\TableNode;
-use Deplink\Tests\BaseContext;
 use PHPUnit\Framework\Assert;
 
 class PackageContext extends BaseContext

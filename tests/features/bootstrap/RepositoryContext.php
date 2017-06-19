@@ -1,10 +1,7 @@
 <?php
 
-namespace Deplink\Tests\Repositories;
-
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
-use Deplink\Tests\BaseContext;
 use PHPUnit\Framework\Assert;
 
 class RepositoryContext extends BaseContext

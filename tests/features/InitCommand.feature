@@ -48,7 +48,7 @@ Feature: Init command
 
   Scenario Outline: Invalid package name
     When I run "deplink init <packageName>"
-    And the console output should contains "Invalid '<packageName>' package name, use org/package format (use only letters, digits and dashes)"
+    And the console output should contains "Invalid '<packageName>' package name, use org/package format (only alphanumeric and dashes allowed)"
     And command should exit with status code 1
 
     Examples:

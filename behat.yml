@@ -1,13 +1,13 @@
 default:
     autoload:
-      - %paths.base%/tests
+      - %paths.base%/tests/features/bootstrap
 
     suites:
         cli:
             paths:
-              - %paths.base%/tests/Console
+              - %paths.base%/tests/features
             contexts:
-              - Deplink\Tests\Console\CommandContext
-              - Deplink\Tests\Environment\FilesystemContext
-              - Deplink\Tests\Packages\PackageContext
-              - Deplink\Tests\Repositories\RepositoryContext
+              - CommandContext
+              - FilesystemContext
+              - PackageContext
+              - RepositoryContext

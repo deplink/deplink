@@ -6,13 +6,12 @@
     "properties": {
         "name": {
             "type": "string",
-            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$",
-            "description": "Package name using 'org/name' format."
+            "description": "Package name using 'org/package' format."
         },
 
         "type": {
             "type": "string",
-            "description": "Either 'library' for static and shared libraries or 'project' for executable projects. The default value is 'library'."
+            "description": "Either 'library' for static and shared libraries or 'project' for executable projects."
         },
 
         "version": {

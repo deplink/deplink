@@ -3,12 +3,33 @@
 namespace Deplink\Console\Commands;
 
 use Deplink\Console\BaseCommand;
+use Deplink\Environment\Filesystem;
+use Deplink\Packages\PackageFactory;
 use Deplink\Packages\ValueObjects\PackageNameObject;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class InitCommand extends BaseCommand
 {
+    /**
+     * @var PackageFactory
+     */
+    private $factory;
+
+    /**
+     * InitCommand constructor.
+     *
+     * @param Filesystem $fs
+     * @param PackageFactory $factory
+     * @throws \Symfony\Component\Console\Exception\LogicException
+     */
+    public function __construct(Filesystem $fs, PackageFactory $factory)
+    {
+        $this->factory = $factory;
+
+        parent::__construct($fs);
+    }
+
     protected function configure()
     {
         $this->setName('init')
@@ -24,7 +45,8 @@ class InitCommand extends BaseCommand
      * If method throw an exception then command exits with code 1
      * and show error message, otherwise exits with code 0.
      *
-     * @return void|int Exit code, if not provided then status code 0 is returned.
+     * @return int|void Exit code, if not provided then status code 0 is returned.
+     * @throws \Exception
      */
     protected function exec()
     {
@@ -40,7 +62,8 @@ class InitCommand extends BaseCommand
      * Get package name passed in the argument
      * or retrieve it from the current working directory.
      *
-     * @return PackageNameObject
+     * @return string
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
      */
     private function resolveName()
     {
@@ -49,20 +72,20 @@ class InitCommand extends BaseCommand
             $workingDir = $this->fs->getWorkingDir();
             $parts = explode('/', $workingDir);
 
-            $package = array_pop($parts);
-            $org = array_pop($parts);
+            $package = array_pop($parts) ?: 'package';
+            $org = array_pop($parts) ?: 'org';
 
             $name = "$org/$package";
         }
 
-        return new PackageNameObject($name);
+        return $name;
     }
 
     /**
-     * @param PackageNameObject $packageName
+     * @param string $packageName
      * @throws \Exception
      */
-    private function createPackageFile(PackageNameObject $packageName)
+    private function createPackageFile($packageName)
     {
         if ($this->fs->existsFile('deplink.json')) {
             throw new \Exception("Package already exists in given directory");
@@ -72,11 +95,10 @@ class InitCommand extends BaseCommand
             throw new \Exception("Cannot initialize package in non-empty directory");
         }
 
-        $contents = json_encode([
-            'name' => $packageName->get(),
-            'type' => 'project',
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $package = $this->factory->makeEmpty()
+            ->setName($packageName)
+            ->setType('project');
 
-        $this->fs->writeFile('deplink.json', $contents);
+        $this->fs->writeFile('deplink.json', $package->getJson());
     }
 }
