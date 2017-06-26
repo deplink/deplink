@@ -1,6 +1,8 @@
 {
     "name": "deplink/deplink",
     "description": "Dependency Manager for C/C++",
+    "keywords": ["dependencies", "manager", "c", "c++"],
+    "homepage": "https://deplink.org",
     "type": "project",
     "license": "MIT",
     "authors": [
@@ -21,7 +23,9 @@
     "require": {
         "php": "^5.6 || ^7.0",
         "php-di/php-di": "^5.4",
-        "symfony/console": "^3.3"
+        "symfony/console": "^3.3",
+        "seld/jsonlint": "^1.6",
+        "justinrainbow/json-schema": "^5.2"
     },
     "require-dev": {
         "behat/behat": "^3.3",
