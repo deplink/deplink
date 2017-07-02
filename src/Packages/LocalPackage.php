@@ -2,6 +2,8 @@
 
 namespace Deplink\Packages;
 
+use Deplink\Packages\ValueObjects\RepositoryObject;
+
 /**
  * Mutable package json file.
  */
@@ -39,12 +41,12 @@ class LocalPackage implements \JsonSerializable
     /**
      * @var string[]
      */
-    private $includes = ['include'];
+    private $includeDirs = ['include'];
 
     /**
      * @var string[]
      */
-    private $sources = ['src'];
+    private $sourceDirs = ['src'];
 
     /**
      * @var CompilerConstraintObject[]
@@ -89,14 +91,14 @@ class LocalPackage implements \JsonSerializable
     /**
      * @var RepositoryObject[]
      */
-//    private $repositories = [];
+    private $repositories = [];
 
     /**
-     * Path to the json file.
+     * Dir where the json file is located.
      *
      * @var string
      */
-    private $src;
+    private $dir;
 
     /**
      * @return string
@@ -166,18 +168,72 @@ class LocalPackage implements \JsonSerializable
     /**
      * @return string
      */
-    public function getSrc()
+    public function getDir()
     {
-        return $this->src;
+        return $this->dir;
     }
 
     /**
-     * @param string $src
+     * @param string $dir
      * @return LocalPackage
      */
-    public function setSrc($src)
+    public function setDir($dir)
     {
-        $this->src = $src;
+        $this->dir = $dir;
+        return $this;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getIncludeDirs()
+    {
+        return $this->includeDirs;
+    }
+
+    /**
+     * @param string|\string[] $includeDirs
+     * @return LocalPackage
+     */
+    public function setIncludeDirs($includeDirs)
+    {
+        $this->includeDirs = (array)$includeDirs;
+        return $this;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getSourceDirs()
+    {
+        return $this->sourceDirs;
+    }
+
+    /**
+     * @param string|\string[] $sourceDirs
+     * @return LocalPackage
+     */
+    public function setSourceDirs($sourceDirs)
+    {
+        $this->sourceDirs = (array)$sourceDirs;
+        return $this;
+    }
+
+    /**
+     * @return RepositoryObject[]
+     */
+    public function getRepositories()
+    {
+        return $this->repositories;
+    }
+
+    /**
+     * @param RepositoryObject[] $repositories
+     * @return LocalPackage
+     */
+    public function setRepositories($repositories)
+    {
+        $this->repositories = $repositories;
         return $this;
     }
 
