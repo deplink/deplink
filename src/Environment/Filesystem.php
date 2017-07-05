@@ -2,6 +2,7 @@
 
 namespace Deplink\Environment;
 
+use Deplink\Environment\Exceptions\FileCopyException;
 use Deplink\Environment\Exceptions\InvalidPathException;
 use Deplink\Environment\Exceptions\UnknownException;
 use Exception;
@@ -378,5 +379,26 @@ class Filesystem
         array_pop($parts);
 
         return implode('/', $parts);
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     * @throws FileCopyException
+     * @throws InvalidPathException
+     * @throws UnknownException
+     */
+    public function copyFile($from, $to)
+    {
+        $dir = $this->getDirName($to);
+        $this->touchDir($dir);
+
+        if (!$this->existsFile($from)) {
+            throw new InvalidPathException("Cannot copy '$from' to '$to' because source file not exists.");
+        }
+
+        if (!copy($from, $to)) {
+            throw new FileCopyException("Failed to copy '$from' to '$to' (unknown reason). Please check directories permissions.");
+        }
     }
 }
