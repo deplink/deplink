@@ -107,7 +107,7 @@ class InstalledPackagesManager
      * @throws \InvalidArgumentException
      * @throws \Seld\JsonLint\ParsingException
      */
-    public function observe()
+    public function snapshot()
     {
         $locked = $this->listLockedPackages();
         $downloaded = $this->listDownloadedPackages();
@@ -163,6 +163,12 @@ class InstalledPackagesManager
      */
     public function hasInstalled($package)
     {
-        return isset($this->installed[$package]);
+        foreach ($this->installed as $item) {
+            if ($item->getName() === $package) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -1,5 +1,5 @@
 Feature: Install command
-  Download libraries and prepare autoload header
+  Download libraries and prepare autoload header.
 
   Scenario: First installation
     Given there is package which requires:
@@ -11,7 +11,7 @@ Feature: Install command
     When I run "deplink install --no-progress"
     Then the console output should contains:
       """
-      Retrieving installed dependencies... OK
+      Retrieving installed dependencies... Skipped
       Retrieving available dependencies... OK
       Resolving dependencies tree... OK
       Dependencies: 1 install, 0 updates, 0 removals
@@ -150,13 +150,67 @@ Feature: Install command
       """
     And command should exit with status code 1
 
-  # TODO: install newest available and compatible version
-  # TODO: install locked version of the dependencies
-  # TODO: install packages not listed in deplink.lock file
-  # TODO: update packages which changed version constraint is inconsistent with locked version
+  Scenario: Install locked version of the dependencies
+    Given there is package which requires:
+      | package   | version |
+      | basic/log | *       |
+    And local repository contains packages:
+      | package   | version |
+      | basic/log | 1.0.0   |
+    When I run "deplink install --no-progress"
+    And remove "deplinks" folder
+    And upgrade packages:
+      | package   | version |
+      | basic/log | 1.1.0   |
+    And I run "deplink install --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 1 install, 0 updates, 0 removals
+        - Installing basic/log (v1.0.0)
+      """
 
-  # TODO: install only new dependencies
-  # TODO: install only updated dependencies
+  Scenario: Update packages which changed version constraint is inconsistent with locked version
+    Given there is package which requires:
+      | package   | version |
+      | basic/log | 1.*     |
+    And local repository contains packages:
+      | package   | version |
+      | basic/log | 1.2.0   |
+    When I run "deplink install --no-progress"
+    And change global package requirements:
+      | package   | version |
+      | basic/log | 2.*     |
+    And upgrade packages:
+      | package   | version |
+      | basic/log | 2.0.0   |
+    And I run "deplink install --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 0 install, 1 updates, 0 removals
+        - Updating basic/log (v1.2.0 -> v2.0.0)
+      """
+
+  Scenario: Install package not listed in deplink.lock file
+    Given there is package which requires:
+      | package   | version |
+      | basic/log | *       |
+    And local repository contains packages:
+      | package    | version |
+      | basic/log  | 1.0.0   |
+      | basic/unit | 1.0.0   |
+    When I run "deplink install --no-progress"
+    And change global package requirements:
+      | package    | version |
+      | basic/log  | *       |
+      | basic/unit | *       |
+    And I run "deplink install --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 1 install, 0 updates, 0 removals
+        - Installing basic/unit (v1.0.0)
+      """
+    And command should exit with status code 0
+
   # TODO: cleanup deplinks directory if installed.lock file is missing
   # TODO: delete mismatches between installed.lock and directory structure
 
@@ -165,3 +219,9 @@ Feature: Install command
   # TODO: check packages compiler compatibility
   # TODO: check packages platform compatibility
   # TODO: check packages architecture compatibility
+
+  # TODO: Remove packages
+  # TODO: Install local package without specified version (default 0.1.0), each installation should reinstall package
+  # TODO: Test script callbacks
+
+  # TODO: install newest available and compatible version (how to test? local repository allows hosting only one version)

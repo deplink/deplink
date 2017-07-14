@@ -63,4 +63,12 @@ class RepositoryContext extends BaseContext
         $fileContents = $this->fs->readFile($path);
         Assert::assertContains($string->getRaw(), $fileContents);
     }
+
+    /**
+     * @Given /^upgrade packages:$/
+     */
+    public function upgradePackages(TableNode $table)
+    {
+        return $this->localRepositoryContainsPackages($table);
+    }
 }

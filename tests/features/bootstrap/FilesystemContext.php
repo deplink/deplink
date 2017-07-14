@@ -90,4 +90,13 @@ class FilesystemContext extends BaseContext
     {
         $this->fs->writeFile($file, $string->getRaw());
     }
+
+    /**
+     * @Given remove :dir folder
+     */
+    public function removeFolder($dir)
+    {
+        $this->fs->removeDir($dir);
+        Assert::assertDirectoryNotExists($dir);
+    }
 }
