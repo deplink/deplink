@@ -6,6 +6,7 @@ use Deplink\Downloaders\Downloader;
 use Deplink\Environment\Config;
 use Deplink\Environment\Exceptions\InvalidPathException;
 use Deplink\Environment\Filesystem;
+use Deplink\Packages\ValueObjects\DependencyConstraintObject;
 use Deplink\Packages\ValueObjects\RepositoryObject;
 use Deplink\Repositories\Repository;
 use Deplink\Validators\JsonValidator;
@@ -182,7 +183,13 @@ class PackageFactory
         $package->setIncludeDirs($this->get($json, 'include', 'include'));
         $package->setSourceDirs($this->get($json, 'source', 'src'));
 
-        // Register package and defaults repositories.
+        $dependencies = $this->get($json, 'dependencies', []);
+        $package->setDependencies(DependencyConstraintObject::hydrate($dependencies));
+
+        $devDependencies = $this->get($json, 'dev-dependencies', []);
+        $package->setDevDependencies(DependencyConstraintObject::hydrate($devDependencies));
+
+        // Register package repositories (including default repositories).
         $repositories = $this->get($json, 'repositories', []);
         $defaultRepositories = $this->config->get('repositories.defaults');
         $repositories = array_merge($repositories, $defaultRepositories);

@@ -2,6 +2,7 @@
 
 namespace Deplink\Packages;
 
+use Deplink\Packages\ValueObjects\DependencyConstraintObject;
 use Deplink\Packages\ValueObjects\RepositoryObject;
 
 /**
@@ -49,44 +50,55 @@ class LocalPackage implements \JsonSerializable
     private $sourceDirs = ['src'];
 
     /**
+     * TODO
+     *
      * @var CompilerConstraintObject[]
      */
-//    private $compilers = [];
+    private $compilers = [];
 
     /**
+     * TODO
      * @var PlatformConstraintObject[]
      */
-//    private $platforms = [];
+    private $platforms = [];
 
     /**
+     * TODO
      * @var ArchitectureConstraintObject[]
      */
-//    private $architectures = [];
+    private $architectures = [];
 
     /**
+     * TODO
      * @var LinkingTypeConstraintObject[]
      */
-//    private $linkingTypes = [];
+    private $linkingTypes = [];
 
     /**
      * @var DependencyConstraintObject[]
      */
-//    private $dependencies = [];
+    private $dependencies = [];
 
     /**
+     * Development dependencies are installed only for the root package
+     * and can be omitted using --no-dev option. Use them only for packages
+     * which aren't required for the proper functioning of the project.
+     *
      * @var DependencyConstraintObject[]
      */
-//    private $devDependencies = [];
+    private $devDependencies = [];
 
     /**
+     * TODO
      * @var MacroObject
      */
-//    private $macros = [];
+    private $macros = [];
 
     /**
+     * TODO
      * @var ScriptConstraintObject
      */
-//    private $scripts = [];
+    private $scripts = [];
 
     /**
      * @var RepositoryObject[]
@@ -234,6 +246,42 @@ class LocalPackage implements \JsonSerializable
     public function setRepositories($repositories)
     {
         $this->repositories = $repositories;
+        return $this;
+    }
+
+    /**
+     * @return DependencyConstraintObject[]
+     */
+    public function getDependencies()
+    {
+        return $this->dependencies;
+    }
+
+    /**
+     * @param DependencyConstraintObject[] $dependencies
+     * @return LocalPackage
+     */
+    public function setDependencies($dependencies)
+    {
+        $this->dependencies = $dependencies;
+        return $this;
+    }
+
+    /**
+     * @return DependencyConstraintObject[]
+     */
+    public function getDevDependencies()
+    {
+        return $this->devDependencies;
+    }
+
+    /**
+     * @param DependencyConstraintObject[] $devDependencies
+     * @return LocalPackage
+     */
+    public function setDevDependencies($devDependencies)
+    {
+        $this->devDependencies = $devDependencies;
         return $this;
     }
 
