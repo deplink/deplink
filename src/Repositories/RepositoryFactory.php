@@ -4,6 +4,7 @@ namespace Deplink\Repositories;
 
 use Deplink\Environment\Config;
 use Deplink\Packages\PackageFactory;
+use Deplink\Packages\ValueObjects\RepositoryObject;
 use Deplink\Repositories\Exceptions\UnknownRepositoryTypeException;
 use Deplink\Repositories\Providers\EmptyRepository;
 use Deplink\Repositories\Providers\LocalRepository;
@@ -66,6 +67,33 @@ class RepositoryFactory
         ]);
 
         return $repository;
+    }
+
+    /**
+     * Create a searchable collection of repositories from plain objects.
+     *
+     * @param RepositoryObject[] $repositories
+     * @return RepositoriesCollection
+     * @throws UnknownRepositoryTypeException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \InvalidArgumentException
+     */
+    public function makeCollection(array $repositories)
+    {
+        $collection = $this->di->make(RepositoriesCollection::class);
+        foreach ($repositories as $repository) {
+            $interactiveRepository = $this->make(
+                $repository->getType(),
+                $repository->getSource()
+            );
+
+            $collection->add($interactiveRepository);
+        }
+
+        return $collection;
     }
 
     /**

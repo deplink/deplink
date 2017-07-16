@@ -2,7 +2,7 @@
 
 namespace Deplink\Packages;
 
-use Deplink\Packages\ValueObjects\DependencyConstraintObject;
+use Deplink\Packages\ValueObjects\DependencyObject;
 use Deplink\Packages\ValueObjects\RepositoryObject;
 
 /**
@@ -75,7 +75,7 @@ class LocalPackage implements \JsonSerializable
     private $linkingTypes = [];
 
     /**
-     * @var DependencyConstraintObject[]
+     * @var DependencyObject[]
      */
     private $dependencies = [];
 
@@ -84,7 +84,7 @@ class LocalPackage implements \JsonSerializable
      * and can be omitted using --no-dev option. Use them only for packages
      * which aren't required for the proper functioning of the project.
      *
-     * @var DependencyConstraintObject[]
+     * @var DependencyObject[]
      */
     private $devDependencies = [];
 
@@ -250,7 +250,7 @@ class LocalPackage implements \JsonSerializable
     }
 
     /**
-     * @return DependencyConstraintObject[]
+     * @return DependencyObject[]
      */
     public function getDependencies()
     {
@@ -258,7 +258,7 @@ class LocalPackage implements \JsonSerializable
     }
 
     /**
-     * @param DependencyConstraintObject[] $dependencies
+     * @param DependencyObject[] $dependencies
      * @return LocalPackage
      */
     public function setDependencies($dependencies)
@@ -268,7 +268,7 @@ class LocalPackage implements \JsonSerializable
     }
 
     /**
-     * @return DependencyConstraintObject[]
+     * @return DependencyObject[]
      */
     public function getDevDependencies()
     {
@@ -276,7 +276,7 @@ class LocalPackage implements \JsonSerializable
     }
 
     /**
-     * @param DependencyConstraintObject[] $devDependencies
+     * @param DependencyObject[] $devDependencies
      * @return LocalPackage
      */
     public function setDevDependencies($devDependencies)

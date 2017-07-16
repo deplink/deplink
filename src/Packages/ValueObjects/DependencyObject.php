@@ -2,7 +2,7 @@
 
 namespace Deplink\Packages\ValueObjects;
 
-class DependencyConstraintObject
+class DependencyObject
 {
     /**
      * @var string
@@ -43,7 +43,7 @@ class DependencyConstraintObject
 
     /**
      * @param string $packageName
-     * @return DependencyConstraintObject
+     * @return DependencyObject
      */
     public function setPackageName($packageName)
     {
@@ -61,7 +61,7 @@ class DependencyConstraintObject
 
     /**
      * @param string $versionConstraint
-     * @return DependencyConstraintObject
+     * @return DependencyObject
      */
     public function setVersionConstraint($versionConstraint)
     {
@@ -79,7 +79,7 @@ class DependencyConstraintObject
 
     /**
      * @param string[] $linkingConstraint
-     * @return DependencyConstraintObject
+     * @return DependencyObject
      */
     public function setLinkingConstraint(array $linkingConstraint)
     {
@@ -91,7 +91,7 @@ class DependencyConstraintObject
      * Convert raw array to object.
      *
      * @param array $dependencies
-     * @return DependencyConstraintObject[]
+     * @return DependencyObject[]
      * @throws \InvalidArgumentException
      */
     public static function hydrate(array $dependencies)
@@ -110,7 +110,7 @@ class DependencyConstraintObject
                 throw new \InvalidArgumentException("Linking constraint for the '$packageName' package must be either 'static' or 'dynamic', given '{$typeConstraint[0]}'.");
             }
 
-            $result[] = new DependencyConstraintObject(
+            $result[] = new DependencyObject(
                 $packageName, $versionConstraint, $typeConstraint
             );
         }
