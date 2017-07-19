@@ -209,14 +209,12 @@ class PackageFactory
     public function makeRemote(
         Repository $repository,
         VersionFinder $versionFinder,
-        Downloader $downloader,
-        LocalPackage $package
+        Downloader $downloader
     ) {
         return $this->di->make(RemotePackage::class, [
             'repository' => $repository,
             'versionFinder' => $versionFinder,
             'downloader' => $downloader,
-            'package' => $package,
         ]);
     }
 }

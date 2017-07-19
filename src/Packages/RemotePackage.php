@@ -30,28 +30,20 @@ class RemotePackage
     private $downloader;
 
     /**
-     * @var LocalPackage
-     */
-    private $package;
-
-    /**
      * Remote constructor.
      *
      * @param Repository $repository
      * @param VersionFinder $versionFinder
      * @param Downloader $downloader
-     * @param LocalPackage $package
      */
     public function __construct(
         Repository $repository,
         VersionFinder $versionFinder,
-        Downloader $downloader,
-        LocalPackage $package
+        Downloader $downloader
     ) {
         $this->repository = $repository;
         $this->versionFinder = $versionFinder;
         $this->downloader = $downloader;
-        $this->package = $package;
     }
 
     /**
@@ -60,14 +52,6 @@ class RemotePackage
     public function getRepository()
     {
         return $this->repository;
-    }
-
-    /**
-     * @return LocalPackage
-     */
-    public function getPackage()
-    {
-        return $this->package;
     }
 
     /**

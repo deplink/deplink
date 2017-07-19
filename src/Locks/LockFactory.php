@@ -55,6 +55,7 @@ class LockFactory
         if (!$this->fs->existsFile($file)) {
             return $this->makeEmpty();
         }
+
         $content = $this->fs->readFile($file);
         return $this->makeFromJson($content);
     }
