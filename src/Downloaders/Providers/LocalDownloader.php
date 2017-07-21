@@ -8,6 +8,8 @@ use Deplink\Downloaders\Exceptions\DestinationNotExistsException;
 use Deplink\Downloaders\Exceptions\SourceNotExistsException;
 use Deplink\Downloaders\Fixtures\DummyDownloadingProgress;
 use Deplink\Environment\Filesystem;
+use Deplink\Packages\LocalPackage;
+use Deplink\Packages\PackageFactory;
 
 class LocalDownloader implements Downloader
 {
@@ -29,14 +31,21 @@ class LocalDownloader implements Downloader
     private $fs;
 
     /**
+     * @var PackageFactory
+     */
+    private $packageFactory;
+
+    /**
      * LocalDownloader constructor.
      *
      * @param Filesystem $fs
+     * @param PackageFactory $packageFactory
      * @param string $src
      */
-    public function __construct(Filesystem $fs, $src)
+    public function __construct(Filesystem $fs, PackageFactory $packageFactory, $src)
     {
         $this->srcDir = $src;
+        $this->packageFactory = $packageFactory;
         $this->fs = $fs;
     }
 
@@ -122,5 +131,30 @@ class LocalDownloader implements Downloader
     public function from()
     {
         return $this->srcDir;
+    }
+
+    /**
+     * Download only deplink.json file.
+     *
+     * @param string $version
+     * @return LocalPackage
+     * @throws SourceNotExistsException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Validators\Exceptions\JsonDecodeException
+     * @throws \Deplink\Validators\Exceptions\ValidationException
+     * @throws \InvalidArgumentException
+     * @throws \Seld\JsonLint\ParsingException
+     */
+    public function requestDetails($version)
+    {
+        // Check source directory
+        if (!$this->fs->existsDir($this->from())) {
+            throw new SourceNotExistsException("Cannot point to local package '{$this->from()}' (directory not exists).");
+        }
+
+        return $this->packageFactory->makeFromDir($this->from());
     }
 }
