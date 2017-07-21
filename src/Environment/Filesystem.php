@@ -81,6 +81,8 @@ class Filesystem
      *
      * @param string $file
      * @param string $contents
+     * @throws InvalidPathException
+     * @throws UnknownException
      */
     public function writeFile($file, $contents)
     {
@@ -270,6 +272,8 @@ class Filesystem
      * Remove directory or file.
      *
      * @param string $path
+     * @throws InvalidPathException
+     * @throws UnknownException
      */
     public function removePath($path)
     {

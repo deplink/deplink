@@ -200,7 +200,6 @@ class PackageFactory
      * @param Repository $repository
      * @param VersionFinder $versionFinder
      * @param Downloader $downloader
-     * @param LocalPackage $package
      * @return RemotePackage
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
