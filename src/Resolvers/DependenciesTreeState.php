@@ -2,14 +2,14 @@
 
 namespace Deplink\Resolvers;
 
+use Deplink\Dependencies\DependenciesCollection;
+
 class DependenciesTreeState
 {
     /**
-     * The package name (key) and proposed installation version (value).
-     *
-     * @var array
+     * @var DependenciesCollection
      */
-    private $versions = [];
+    private $packages = [];
 
     /**
      * The package name (key) with array of string constraints.
@@ -21,10 +21,21 @@ class DependenciesTreeState
     /**
      * @param string $packageName
      * @param string $version
+     * @return $this
      */
-    public function set($packageName, $version)
+    public function setPackage($packageName, $version)
     {
-        $this->versions[$packageName] = $version;
+        $this->packages->add($packageName, $version);
+
+        return $this;
+    }
+
+    /**
+     * @return DependenciesCollection
+     */
+    public function getPackages()
+    {
+        return $this->packages;
     }
 
     /**
@@ -47,16 +58,5 @@ class DependenciesTreeState
     public function getConstraint($packageName)
     {
         return implode(' ', $this->constraints[$packageName]);
-    }
-
-    /**
-     * Check whether all packages versions
-     * are satisfied by the given constraints.
-     *
-     * @return bool
-     */
-    public function checkState()
-    {
-        //TODO: Required?
     }
 }

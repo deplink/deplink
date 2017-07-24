@@ -19,9 +19,9 @@ use Deplink\Versions\VersionComparator;
 class DependenciesTreeResolver
 {
     /**
-     * @var DependenciesTreeState
+     * @var DependenciesTreeState[]
      */
-    private $resolvedState;
+    private $resolvedStates;
 
     /**
      * @var RepositoriesCollection
@@ -36,7 +36,7 @@ class DependenciesTreeResolver
     /**
      * @var LocalPackage
      */
-    protected $project;
+    private $project;
 
     /**
      * Packages which version can be upgraded.
@@ -44,21 +44,6 @@ class DependenciesTreeResolver
      * @var string[]
      */
     private $unlocked;
-
-    /**
-     * @var MissingDependencyObject[]
-     */
-    private $installs;
-
-    /**
-     * @var OutdatedDependencyObject[]
-     */
-    private $updates;
-
-    /**
-     * @var RedundantDependencyObject[]
-     */
-    private $removals;
 
     /**
      * @var LockFactory
@@ -78,17 +63,17 @@ class DependenciesTreeResolver
     /**
      * @var RepositoryFactory
      */
-    private $repositoryFactory;
+    protected $repositoryFactory;
 
     /**
      * @var ResolverFactory
      */
-    private $resolverFactory;
+    protected $resolverFactory;
 
     /**
      * @var VersionComparator
      */
-    private $versionComparator;
+    protected $versionComparator;
 
     /**
      * DependenciesTreeResolver constructor.
@@ -108,10 +93,9 @@ class DependenciesTreeResolver
         ResolverFactory $resolverFactory,
         VersionComparator $versionComparator
     ) {
-        //$this->lockFactory = $lockFactory;
+        $this->lockFactory = $lockFactory;
         $this->packageFactory = $packageFactory;
         $this->repositoryFactory = $repositoryFactory;
-        //$this->installedPackages = $installedPackages;
         $this->resolverFactory = $resolverFactory;
         $this->versionComparator = $versionComparator;
     }
@@ -132,11 +116,8 @@ class DependenciesTreeResolver
      */
     public function snapshot()
     {
-        //$this->locked = $this->lockFactory->makeFromFileOrEmpty('deplink.lock');
+        $this->locked = $this->lockFactory->makeFromFileOrEmpty('deplink.lock');
         $this->project = $this->packageFactory->makeFromDir('.');
-
-        //$this->installedPackages->snapshot();
-        //$this->removals = $this->installedPackages->getAmbiguous();
 
         // All dependencies will be discovered in repositories
         // defined only in the current project deplink.json file.
@@ -158,7 +139,7 @@ class DependenciesTreeResolver
 
         // Start recursive resolving process.
         $dependenciesNames = array_keys($dependencies);
-        $this->resolvedState = $this->resolve($dependenciesNames, [$state]);
+        $this->resolvedStates = $this->resolve($dependenciesNames, [$state]);
     }
 
     /**
@@ -215,11 +196,12 @@ class DependenciesTreeResolver
             );
 
             // Emit new state for each version of dependency.
-            // TODO: First pick preferred version, also limit the number of versions.
+            // TODO: Pick newest version if unlocked (update), preferred version, locked version or newest one.
+            // TODO: Limit number of versions to 2-5 (don't check all).
             $versions = $this->versionComparator->reverseSort($versions);
             foreach ($versions as $version) {
                 $tmpState = clone $state;
-                $tmpState->set($dependency, $version);
+                $tmpState->setPackage($dependency, $version);
 
                 // Add packages constraints to the state for the given version of the dependency.
                 $package = $remote->getDownloader()->requestDetails($version);
@@ -241,5 +223,13 @@ class DependenciesTreeResolver
         }
 
         return $resultStates;
+    }
+
+    /**
+     * @return DependenciesTreeState[]
+     */
+    public function getResolvedStates()
+    {
+        return $this->resolvedStates;
     }
 }

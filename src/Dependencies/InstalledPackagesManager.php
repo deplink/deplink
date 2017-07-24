@@ -5,8 +5,6 @@ namespace Deplink\Dependencies;
 use Deplink\Environment\Config;
 use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
-use Deplink\Packages\LocalPackage;
-use Deplink\Packages\PackageFactory;
 
 /**
  * List installed dependencies from structure in deplinks directory
@@ -15,9 +13,9 @@ use Deplink\Packages\PackageFactory;
 class InstalledPackagesManager
 {
     /**
-     * @var LocalPackage[]
+     * @var DependenciesCollection
      */
-    protected $installed = [];
+    protected $installed;
 
     /**
      * @var string[]
@@ -40,23 +38,16 @@ class InstalledPackagesManager
     private $config;
 
     /**
-     * @var PackageFactory
-     */
-    private $packageFactory;
-
-    /**
      * Observer constructor.
      *
      * @param Filesystem $fs
      * @param LockFactory $lockFactory
-     * @param PackageFactory $packageFactory
      * @param Config $config
      */
-    public function __construct(Filesystem $fs, LockFactory $lockFactory, PackageFactory $packageFactory, Config $config)
+    public function __construct(Filesystem $fs, LockFactory $lockFactory, Config $config)
     {
         $this->fs = $fs;
         $this->lockFactory = $lockFactory;
-        $this->packageFactory = $packageFactory;
         $this->config = $config;
     }
 
@@ -124,10 +115,9 @@ class InstalledPackagesManager
             return array_search($key, $downloaded) !== false;
         }, ARRAY_FILTER_USE_KEY);
 
-        $this->installed = [];
+        $this->installed = new DependenciesCollection();
         foreach ($installed as $name => $version) {
-            $path = $this->fs->path('deplinks', $name);
-            $this->installed[] = $this->packageFactory->makeFromDir($path, $version);
+            $this->installed->add($name, $version);
         }
 
         return $this;
@@ -146,9 +136,7 @@ class InstalledPackagesManager
     }
 
     /**
-     * Get installed dependencies list.
-     *
-     * @return LocalPackage[]
+     * @return DependenciesCollection
      */
     public function getInstalled()
     {
@@ -163,12 +151,6 @@ class InstalledPackagesManager
      */
     public function hasInstalled($package)
     {
-        foreach ($this->installed as $item) {
-            if ($item->getName() === $package) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->installed->has($package);
     }
 }
