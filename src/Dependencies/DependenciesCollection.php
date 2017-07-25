@@ -3,25 +3,28 @@
 namespace Deplink\Dependencies;
 
 use Deplink\Dependencies\Excpetions\DependencyNotExistsException;
+use Deplink\Dependencies\ValueObjects\DependencyObject;
+use Deplink\Packages\LocalPackage;
+use Deplink\Packages\RemotePackage;
 
 class DependenciesCollection
 {
     /**
-     * @var array Package name (key) with object (value). Object contains 'version' and 'data' keys.
+     * @var DependencyObject[]
      */
     private $dependencies = [];
 
     /**
      * @param string $name
      * @param string $version
-     * @param mixed $data
+     * @param LocalPackage|null $local
+     * @param RemotePackage|null $remote
      */
-    public function add($name, $version, $data = null)
+    public function add($name, $version, $local = null, $remote = null)
     {
-        $this->dependencies[$name] = (object)[
-            'version' => $version,
-            'data' => $data,
-        ];
+        $this->dependencies[$name] = new DependencyObject(
+            $name, $version, $local, $remote
+        );
     }
 
     /**
@@ -38,7 +41,7 @@ class DependenciesCollection
             return false;
         }
 
-        if (!is_null($version) && $this->dependencies[$name]->version !== $version) {
+        if (!is_null($version) && $this->dependencies[$name]->getVersion() !== $version) {
             return false;
         }
 
@@ -67,29 +70,15 @@ class DependenciesCollection
 
     /**
      * @param string $name
-     * @return string
+     * @return DependencyObject
      * @throws DependencyNotExistsException
      */
-    public function getVersion($name)
+    public function get($name)
     {
         if (!$this->has($name)) {
             throw new DependencyNotExistsException("The '$name' dependency not exists in the given collection.");
         }
 
-        return $this->dependencies[$name]->version;
-    }
-
-    /**
-     * @param string $name
-     * @return mixed
-     * @throws DependencyNotExistsException
-     */
-    public function getData($name)
-    {
-        if (!$this->has($name)) {
-            throw new DependencyNotExistsException("The '$name' dependency not exists in the given collection.");
-        }
-
-        return $this->dependencies[$name]->data;
+        return $this->dependencies[$name];
     }
 }
