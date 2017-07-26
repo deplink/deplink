@@ -12,7 +12,6 @@ Feature: Install command
     Then the console output should contains:
       """
       Retrieving installed dependencies... Skipped
-      Retrieving available dependencies... OK
       Resolving dependencies tree... OK
       Dependencies: 1 install, 0 updates, 0 removals
         - Installing hello/world (v1.0.0)
@@ -57,7 +56,6 @@ Feature: Install command
     Then the console output should contains:
       """
       Retrieving installed dependencies... OK
-      Retrieving available dependencies... OK
       Resolving dependencies tree... OK
       Dependencies: 2 install, 0 updates, 0 removals
         - Installing hello/lipsum (v1.0.0)
@@ -91,7 +89,6 @@ Feature: Install command
     Then the console output should contains:
       """
       Retrieving installed dependencies... OK
-      Retrieving available dependencies... OK
       Resolving dependencies tree... OK
       Dependencies: 2 install, 0 updates, 0 removals
         - Installing basic/log (v1.0.0)
@@ -219,9 +216,11 @@ Feature: Install command
   # TODO: check packages compiler compatibility
   # TODO: check packages platform compatibility
   # TODO: check packages architecture compatibility
+  # TODO: dependency defined in both dependencies and dev-dependencies section
 
   # TODO: Remove packages
   # TODO: Install local package without specified version (default 0.1.0), each installation should reinstall package
   # TODO: Test script callbacks
+  # TODO: --no-dev option
 
   # TODO: install newest available and compatible version (how to test? local repository allows hosting only one version)

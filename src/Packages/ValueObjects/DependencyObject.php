@@ -90,11 +90,11 @@ class DependencyObject
     /**
      * Convert raw array to object.
      *
-     * @param array $dependencies
+     * @param object|array $dependencies
      * @return DependencyObject[]
      * @throws \InvalidArgumentException
      */
-    public static function hydrate(array $dependencies)
+    public static function hydrate($dependencies)
     {
         $result = [];
         foreach ($dependencies as $packageName => $constraints) {

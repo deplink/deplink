@@ -15,12 +15,17 @@ class InstalledPackagesManager
     /**
      * @var DependenciesCollection
      */
-    protected $installed;
+    private $installed;
 
     /**
      * @var string[]
      */
-    protected $ambiguous = [];
+    private $ambiguous = [];
+
+    /**
+     * @var \DateTime
+     */
+    private $snapshotAt = null;
 
     /**
      * @var Filesystem
@@ -120,6 +125,7 @@ class InstalledPackagesManager
             $this->installed->add($name, $version);
         }
 
+        $this->snapshotAt = new \DateTime();
         return $this;
     }
 
@@ -152,5 +158,15 @@ class InstalledPackagesManager
     public function hasInstalled($package)
     {
         return $this->installed->has($package);
+    }
+
+    /**
+     * Check whether snapshot was made at least once.
+     *
+     * @return boolean
+     */
+    public function hasSnapshot()
+    {
+        return !is_null($this->snapshotAt);
     }
 }

@@ -78,4 +78,17 @@ abstract class BaseCommand extends Command
      * @return void|int Exit code, if not provided then status code 0 is returned.
      */
     protected abstract function exec();
+
+    /**
+     * Check project working directory and throws any exceptions found in the structure
+     * or related files (like missing deplink.json file or syntax errors in deplink.lock).
+     *
+     * @throws \Exception
+     */
+    protected function checkProject()
+    {
+        if (!$this->fs->existsFile('deplink.json')) {
+            throw new \Exception("Working directory is not the deplink project (check path or initialize project usign `deplink init` command)");
+        }
+    }
 }

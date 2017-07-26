@@ -1,5 +1,6 @@
 <?php
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 
@@ -30,5 +31,15 @@ class PackageContext extends BaseContext
             'dev-dependencies' => new \ArrayObject($devDependencies),
             // TODO: local repository entry
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    /**
+     * @Given /^change global package requirements:$/
+     */
+    public function changeGlobalPackageRequirements(TableNode $table)
+    {
+        // TODO: overwrite deplink.json dependencies and dev-dependencies
+
+        throw new PendingException();
     }
 }

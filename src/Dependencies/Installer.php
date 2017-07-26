@@ -16,17 +16,17 @@ class Installer
     /**
      * @var MissingDependencyObject[]
      */
-    protected $installs;
+    private $installs;
 
     /**
      * @var OutdatedDependencyObject[]
      */
-    protected $updates;
+    private $updates;
 
     /**
      * @var string[]
      */
-    protected $removals;
+    private $removals;
 
     /**
      * @var DependenciesTreeResolver
@@ -71,7 +71,8 @@ class Installer
     /**
      * Download missing and outdated packages.
      *
-     * @param InstallingProgress $progress
+     * @param InstallingProgress|null $progress
+     * @return DependenciesCollection
      * @throws Excpetions\DependencyNotExistsException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
@@ -84,7 +85,7 @@ class Installer
      * @throws \InvalidArgumentException
      * @throws \Seld\JsonLint\ParsingException
      */
-    public function install(InstallingProgress $progress)
+    public function install(InstallingProgress $progress = null)
     {
         // Assign dummy progress listener to avoid errors
         if (!is_callable($progress)) {
@@ -92,8 +93,13 @@ class Installer
         }
 
         // Prepare for installation
-        $this->treeResolver->snapshot();
-        $this->installedPackages->snapshot();
+        if (!$this->treeResolver->hasSnapshot()) {
+            $this->treeResolver->snapshot();
+        }
+
+        if (!$this->installedPackages->hasSnapshot()) {
+            $this->installedPackages->snapshot();
+        }
 
         $this->classifyDependencies();
         $progress->beforeInstallation(
@@ -105,9 +111,9 @@ class Installer
         $this->removePackages($progress);
         $this->updatePackages($progress);
         $this->installPackages($progress);
-        $this->updateLockFile();
 
         $progress->afterInstallation();
+        return $this->getNewlyInstalled();
     }
 
     /**
@@ -209,30 +215,20 @@ class Installer
     }
 
     /**
-     * Generates new lock file. Old lock file will be overwritten if exists.
-     *
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     * @throws \Deplink\Environment\Exceptions\InvalidPathException
-     * @throws \Deplink\Environment\Exceptions\UnknownException
-     * @throws \Deplink\Locks\Exceptions\DuplicateLockEntryException
-     * @throws \InvalidArgumentException
+     * @return DependenciesCollection
      */
-    private function updateLockFile()
+    private function getNewlyInstalled()
     {
-        $lockFile = $this->lockFactory->makeEmpty();
+        $result = new DependenciesCollection();
 
         foreach ($this->installs as $install) {
-            $lockFile->add($install->getName(), $install->getVersion());
+            $result->add($install->getName(), $install->getVersion(), null, $install->getRemote());
         }
 
         foreach ($this->updates as $update) {
-            $lockFile->add($update->getName(), $update->getTargetVersion());
+            $result->add($update->getName(), $update->getTargetVersion(), null, $update->getRemote());
         }
 
-        $this->fs->writeFile(
-            'deplinks/installed.lock',
-            $lockFile->getJson()
-        );
+        return $result;
     }
 }

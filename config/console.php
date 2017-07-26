@@ -21,7 +21,7 @@ return [
      */
     'commands' => [
         \Deplink\Console\Commands\InitCommand::class,
-        //\Deplink\Console\Commands\InstallCommand::class,
+        \Deplink\Console\Commands\InstallCommand::class,
         //\Deplink\Console\Commands\UninstallCommand::class,
         //\Deplink\Console\Commands\BuildCommand::class,
         //\Deplink\Console\Commands\RebuildCommand::class,

@@ -19,6 +19,11 @@ use Deplink\Versions\VersionComparator;
 class DependenciesTreeResolver
 {
     /**
+     * @var \DateTime
+     */
+    private $snapshotAt = null;
+
+    /**
      * @var DependenciesTreeState[]
      */
     private $resolvedStates;
@@ -140,6 +145,7 @@ class DependenciesTreeResolver
         // Start recursive resolving process.
         $dependenciesNames = array_keys($dependencies);
         $this->resolvedStates = $this->resolve($dependenciesNames, [$state]);
+        $this->snapshotAt = new \DateTime();
     }
 
     /**
@@ -231,5 +237,15 @@ class DependenciesTreeResolver
     public function getResolvedStates()
     {
         return $this->resolvedStates;
+    }
+
+    /**
+     * Check whether snapshot was made at least once.
+     *
+     * @return boolean
+     */
+    public function hasSnapshot()
+    {
+        return !is_null($this->snapshotAt);
     }
 }
