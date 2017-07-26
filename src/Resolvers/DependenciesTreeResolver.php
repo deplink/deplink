@@ -7,6 +7,7 @@ use Deplink\Locks\LockFactory;
 use Deplink\Locks\LockFile;
 use Deplink\Packages\LocalPackage;
 use Deplink\Packages\PackageFactory;
+use Deplink\Packages\ValueObjects\DependencyObject;
 use Deplink\Repositories\RepositoriesCollection;
 use Deplink\Repositories\RepositoryFactory;
 use Deplink\Resolvers\Exceptions\ConflictsBetweenDependenciesException;
@@ -132,19 +133,23 @@ class DependenciesTreeResolver
 
         // Get all dependencies (including dev) from the project deplink.json file,
         // this dependencies will be used to make an initial state to check tree correctness.
+
+        /** @var DependencyObject[] $dependencies */
         $dependencies = array_merge(
             $this->project->getDependencies(),
             $this->project->getDevDependencies()
         );
 
         $state = $this->resolverFactory->makeDependenciesTreeState();
-        foreach ($dependencies as $packageName => $constraint) {
-            $state->addConstraint($packageName, $constraint);
+        foreach ($dependencies as $dependency) {
+            $state->addConstraint(
+                $dependency->getPackageName(),
+                $dependency->getVersionConstraint()
+            );
         }
 
         // Start recursive resolving process.
-        $dependenciesNames = array_keys($dependencies);
-        $this->resolvedStates = $this->resolve($dependenciesNames, [$state]);
+        $this->resolvedStates = $this->resolve($dependencies, [$state]);
         $this->snapshotAt = new \DateTime();
     }
 
@@ -152,7 +157,7 @@ class DependenciesTreeResolver
      * Resolve packages versions from most important
      * source to the least important source.
      *
-     * @param string[] $dependencies
+     * @param DependencyObject[] $dependencies
      * @param DependenciesTreeState[] $states
      * @return DependenciesTreeState[]
      * @throws ConflictsBetweenDependenciesException
@@ -160,8 +165,8 @@ class DependenciesTreeResolver
      */
     private function resolve($dependencies, $states)
     {
-        foreach ($dependencies as $dependencyName) {
-            $states = $this->resolveUnit($dependencyName, $states);
+        foreach ($dependencies as $dependency) {
+            $states = $this->resolveUnit($dependency, $states);
         }
 
         // Search for the matching states.
@@ -177,12 +182,12 @@ class DependenciesTreeResolver
     /**
      * TODO: Dependencies loop detection
      *
-     * @param string $dependency
+     * @param DependencyObject $dependency
      * @param DependenciesTreeState[] $states
      * @return DependenciesTreeState[]
      * @throws \Deplink\Repositories\Exceptions\PackageNotFoundException
      */
-    private function resolveUnit($dependency, $states)
+    private function resolveUnit(DependencyObject $dependency, $states)
     {
         // This variable will store new generated states
         // including this and nested dependencies.
@@ -196,9 +201,9 @@ class DependenciesTreeResolver
             $newStates = [];
 
             // Get available versions of dependency for the current state.
-            $remote = $this->repositories->find($dependency);
+            $remote = $this->repositories->find($dependency->getPackageName());
             $versions = $remote->getVersionFinder()->getSatisfiedBy(
-                $state->getConstraint($dependency)
+                $state->getConstraint($dependency->getPackageName())
             );
 
             // Emit new state for each version of dependency.
@@ -207,7 +212,7 @@ class DependenciesTreeResolver
             $versions = $this->versionComparator->reverseSort($versions);
             foreach ($versions as $version) {
                 $tmpState = clone $state;
-                $tmpState->setPackage($dependency, $version);
+                $tmpState->setPackage($dependency->getPackageName(), $version, $remote);
 
                 // Add packages constraints to the state for the given version of the dependency.
                 $package = $remote->getDownloader()->requestDetails($version);
@@ -221,10 +226,24 @@ class DependenciesTreeResolver
             // Repeat states generating for nested dependencies.
             foreach ($versions as $version) {
                 $package = $remote->getDownloader()->requestDetails($version);
-                $resultStates = array_merge(
-                    $resultStates,
-                    $this->resolveUnit($package->getName(), $newStates)
-                );
+
+                // If package has dependencies then try to match dependency
+                // to previously generated states, merge valid states.
+                foreach ($package->getDependencies() as $nestedDependency) {
+                    $resultStates = array_merge(
+                        $resultStates,
+                        $this->resolveUnit($nestedDependency, $newStates)
+                    );
+                }
+
+                // If package doesn't contains any dependencies
+                // then we can assume that all states are valid.
+                if (empty($package->getDependencies())) {
+                    $resultStates = array_merge(
+                        $resultStates,
+                        $newStates
+                    );
+                }
             }
         }
 

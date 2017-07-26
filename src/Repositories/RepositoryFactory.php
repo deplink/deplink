@@ -57,11 +57,11 @@ class RepositoryFactory
      */
     private function make($type, $src)
     {
-        if (!$this->config->has("repositories.$type")) {
+        if (!$this->config->has("repositories.providers.$type")) {
             throw new UnknownRepositoryTypeException("Unrecognized '$type' repository type.");
         }
 
-        $namespace = $this->config->get("repositories.$type");
+        $namespace = $this->config->get("repositories.providers.$type");
         $repository = $this->di->make($namespace, [
             'src' => $src,
         ]);

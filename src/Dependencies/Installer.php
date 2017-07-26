@@ -107,6 +107,7 @@ class Installer
             count($this->updates),
             count($this->removals)
         );
+
         // Installation
         $this->removePackages($progress);
         $this->updatePackages($progress);
@@ -138,15 +139,15 @@ class Installer
             if ($installed->has($package)) {
                 $installedVersion = $installed->get($package)->getVersion();
                 if ($requiredVersion !== $installedVersion) {
-                    $updates[] = new OutdatedDependencyObject(
+                    $this->updates[] = new OutdatedDependencyObject(
                         $package, $installedVersion, $requiredVersion,
                         $installed->get($package)->getRemote()
                     );
                 }
             } else {
-                $installs[] = new MissingDependencyObject(
+                $this->installs[] = new MissingDependencyObject(
                     $package, $requiredVersion,
-                    $installed->get($package)->getRemote()
+                    $required->get($package)->getRemote()
                 );
             }
         }

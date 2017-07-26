@@ -8,7 +8,7 @@ Feature: Install command
     And local repository contains packages:
       | package     | version |
       | hello/world | 1.0.0   |
-    When I run "deplink install --no-progress"
+    When I run "deplink install --no-progress -v"
     Then the console output should contains:
       """
       Retrieving installed dependencies... Skipped

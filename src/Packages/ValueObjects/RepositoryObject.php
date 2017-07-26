@@ -75,14 +75,14 @@ class RepositoryObject
         foreach ($repositories as $repository) {
             $repository = (object)$repository;
 
-            if (!isset($repositories->type)) {
+            if (!isset($repository->type)) {
                 throw new \InvalidArgumentException("Repository must contain 'type' key.");
-            } else if (!isset($repositories->source)) {
+            } else if (!isset($repository->src)) {
                 throw new \InvalidArgumentException("Repository must contain 'source' key.");
             }
 
             $type = $repository->type;
-            $source = $repository->source;
+            $source = $repository->src;
 
             $result[] = new RepositoryObject($type, $source);
         }

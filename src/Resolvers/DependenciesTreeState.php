@@ -3,13 +3,14 @@
 namespace Deplink\Resolvers;
 
 use Deplink\Dependencies\DependenciesCollection;
+use Deplink\Packages\RemotePackage;
 
 class DependenciesTreeState
 {
     /**
      * @var DependenciesCollection
      */
-    private $packages = [];
+    private $packages;
 
     /**
      * The package name (key) with array of string constraints.
@@ -19,13 +20,22 @@ class DependenciesTreeState
     private $constraints = [];
 
     /**
+     * DependenciesTreeState constructor.
+     */
+    public function __construct()
+    {
+        $this->packages = new DependenciesCollection();
+    }
+
+    /**
      * @param string $packageName
      * @param string $version
+     * @param RemotePackage $remote
      * @return $this
      */
-    public function setPackage($packageName, $version)
+    public function setPackage($packageName, $version, RemotePackage $remote)
     {
-        $this->packages->add($packageName, $version);
+        $this->packages->add($packageName, $version, null, $remote);
 
         return $this;
     }

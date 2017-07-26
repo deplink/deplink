@@ -211,15 +211,10 @@ class Filesystem
      * @param string $dir
      * @param int $depth Minimum directory depth.
      * @return \string[]
-     * @throws InvalidPathException Directory not exists.
      */
     public function listDirs($dir, $depth = 1)
     {
-        if (!$this->existsDir($dir)) {
-            throw new InvalidPathException("Cannot list sub-directories because the '$dir' directory not exists");
-        }
-
-        if ($depth <= 0) {
+        if ($depth <= 0 || !$this->existsDir($dir)) {
             return [];
         }
 

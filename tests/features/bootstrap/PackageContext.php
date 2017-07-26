@@ -29,7 +29,10 @@ class PackageContext extends BaseContext
             'type' => 'project',
             'dependencies' => new \ArrayObject($dependencies),
             'dev-dependencies' => new \ArrayObject($devDependencies),
-            // TODO: local repository entry
+            'repositories' => [[
+                'type' => 'local',
+                'src' => $this->fs->path(self::ROOT_DIR, 'resources/repository'),
+            ]],
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
