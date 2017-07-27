@@ -98,7 +98,7 @@ abstract class BaseCommand extends Command
     {
         // The deplink.json exists
         if (!$this->fs->existsFile('deplink.json')) {
-            throw new \Exception("Working directory is not the deplink project (check path or initialize project usign `deplink init` command)");
+            throw new \Exception("Working directory is not the deplink project (check path or initialize project using `deplink init` command)");
         }
 
         // The deplink.json format is valid

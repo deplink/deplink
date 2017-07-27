@@ -5,7 +5,6 @@ namespace Deplink\Console\Commands;
 use Deplink\Console\BaseCommand;
 use Deplink\Environment\Filesystem;
 use Deplink\Packages\PackageFactory;
-use Deplink\Packages\ValueObjects\PackageNameObject;
 use DI\Container;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;

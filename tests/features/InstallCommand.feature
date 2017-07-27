@@ -29,7 +29,7 @@ Feature: Install command
   Scenario: The deplink.json file not exists
     Given file "deplink.json" not exists
     When I run "deplink install"
-    And the console output should contains "Working directory is not the deplink project (check path or initialize project usign `deplink init` command)"
+    And the console output should contains "Working directory is not the deplink project (check path or initialize project using `deplink init` command)"
     And command should exit with status code 1
 
   Scenario: Invalid deplink.json structure

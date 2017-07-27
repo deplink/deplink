@@ -139,7 +139,7 @@ class InstallCommand extends BaseCommand
     private function installDependencies()
     {
         $installer = $this->di->get(Installer::class);
-        $trackProgress = !$this->input->hasOption('no-progess');
+        $trackProgress = !$this->input->hasOption('no-progress');
 
         $this->newlyInstalled = $installer->install(
             new InstallationProgressFormater($this->output, $trackProgress)
