@@ -3,6 +3,8 @@
 namespace Deplink\Console;
 
 use Deplink\Environment\Filesystem;
+use Deplink\Packages\PackageFactory;
+use DI\Container;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,12 +27,19 @@ abstract class BaseCommand extends Command
     protected $fs;
 
     /**
+     * @var Container
+     */
+    private $di;
+
+    /**
      * @param Filesystem $fs
+     * @param Container $di
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    public function __construct(Filesystem $fs)
+    public function __construct(Filesystem $fs, Container $di)
     {
         $this->fs = $fs;
+        $this->di = $di;
 
         parent::__construct();
     }
@@ -87,8 +96,18 @@ abstract class BaseCommand extends Command
      */
     protected function checkProject()
     {
+        // The deplink.json exists
         if (!$this->fs->existsFile('deplink.json')) {
             throw new \Exception("Working directory is not the deplink project (check path or initialize project usign `deplink init` command)");
+        }
+
+        // The deplink.json format is valid
+        $packageFactory = $this->di->get(PackageFactory::class);
+
+        try {
+            $packageFactory->makeFromDir('.');
+        } catch (\Exception $e) {
+            throw new \Exception("Invalid json format of the deplink.json file", 0, $e);
         }
     }
 }

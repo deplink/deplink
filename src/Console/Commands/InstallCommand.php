@@ -64,7 +64,7 @@ class InstallCommand extends BaseCommand
         $this->di = $di;
         $this->lockFactory = $lockFactory;
 
-        parent::__construct($fs);
+        parent::__construct($fs, $di);
     }
 
     protected function configure()

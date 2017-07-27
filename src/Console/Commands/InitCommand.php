@@ -6,6 +6,7 @@ use Deplink\Console\BaseCommand;
 use Deplink\Environment\Filesystem;
 use Deplink\Packages\PackageFactory;
 use Deplink\Packages\ValueObjects\PackageNameObject;
+use DI\Container;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -20,14 +21,15 @@ class InitCommand extends BaseCommand
      * InitCommand constructor.
      *
      * @param Filesystem $fs
+     * @param Container $di
      * @param PackageFactory $factory
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    public function __construct(Filesystem $fs, PackageFactory $factory)
+    public function __construct(Filesystem $fs, Container $di, PackageFactory $factory)
     {
         $this->factory = $factory;
 
-        parent::__construct($fs);
+        parent::__construct($fs, $di);
     }
 
     protected function configure()
