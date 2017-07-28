@@ -9,6 +9,7 @@ use Deplink\Dependencies\ValueObjects\MissingDependencyObject;
 use Deplink\Dependencies\ValueObjects\OutdatedDependencyObject;
 use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
+use Deplink\Packages\PackageFactory;
 use Deplink\Resolvers\DependenciesTreeResolver;
 
 class Installer
@@ -49,21 +50,29 @@ class Installer
     private $fs;
 
     /**
+     * @var PackageFactory
+     */
+    private $packageFactory;
+
+    /**
      * Installer constructor.
      *
      * @param DependenciesTreeResolver $treeResolver
      * @param InstalledPackagesManager $installedPackages
+     * @param PackageFactory $packageFactory
      * @param LockFactory $lockFactory
      * @param Filesystem $fs
      */
     public function __construct(
         DependenciesTreeResolver $treeResolver,
         InstalledPackagesManager $installedPackages,
+        PackageFactory $packageFactory,
         LockFactory $lockFactory,
         Filesystem $fs
     ) {
         $this->treeResolver = $treeResolver;
         $this->installedPackages = $installedPackages;
+        $this->packageFactory = $packageFactory;
         $this->lockFactory = $lockFactory;
         $this->fs = $fs;
     }
@@ -88,7 +97,7 @@ class Installer
     public function install(InstallingProgress $progress = null)
     {
         // Assign dummy progress listener to avoid errors
-        if (!is_callable($progress)) {
+        if (is_null($progress)) {
             $progress = new DummyInstallingProgress();
         }
 
@@ -193,6 +202,12 @@ class Installer
                 $package->getTargetVersion(),
                 new UpdatingProgressForwarder($package, $progress)
             );
+
+            $progress->updatingSucceed(
+                $package->getName(),
+                $package->getSourceVersion(),
+                $package->getTargetVersion()
+            );
         }
     }
 
@@ -212,22 +227,39 @@ class Installer
                 $package->getVersion(),
                 new InstallingProgressForwarder($package, $progress)
             );
+
+            $progress->installingSucceed(
+                $package->getName(),
+                $package->getVersion()
+            );
         }
     }
 
     /**
      * @return DependenciesCollection
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Validators\Exceptions\JsonDecodeException
+     * @throws \Deplink\Validators\Exceptions\ValidationException
+     * @throws \InvalidArgumentException
+     * @throws \Seld\JsonLint\ParsingException
      */
     private function getNewlyInstalled()
     {
         $result = new DependenciesCollection();
 
         foreach ($this->installs as $install) {
-            $result->add($install->getName(), $install->getVersion(), null, $install->getRemote());
+            $dir = $this->fs->path('deplinks', $install->getName());
+            $localPackage = $this->packageFactory->makeFromDir($dir);
+            $result->add($install->getName(), $install->getVersion(), $localPackage, $install->getRemote());
         }
 
         foreach ($this->updates as $update) {
-            $result->add($update->getName(), $update->getTargetVersion(), null, $update->getRemote());
+            $dir = $this->fs->path('deplinks', $update->getName());
+            $localPackage = $this->packageFactory->makeFromDir($dir);
+            $result->add($update->getName(), $update->getTargetVersion(), $localPackage, $update->getRemote());
         }
 
         return $result;

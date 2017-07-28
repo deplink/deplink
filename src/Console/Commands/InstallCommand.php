@@ -18,15 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
 class InstallCommand extends BaseCommand
 {
     /**
-     * Packages installed in the deplinks directory
-     * (before installation process).
-     *
-     * @see retrieveInstalledDependencies
-     * @var DependenciesCollection
-     */
-    protected $installed;
-
-    /**
      * Resolved dependencies tree states.
      *
      * @var DependenciesTreeState
@@ -39,7 +30,7 @@ class InstallCommand extends BaseCommand
      *
      * @var DependenciesCollection
      */
-    protected $newlyInstalled;
+    protected $installed;
 
     /**
      * @var Container
@@ -121,7 +112,6 @@ class InstallCommand extends BaseCommand
             $this->fs->removeDir($path);
         }
 
-        $this->installed = $manager->getInstalled();
         $this->output->writeln('<info>OK</info>');
     }
 
@@ -141,20 +131,22 @@ class InstallCommand extends BaseCommand
         $installer = $this->di->get(Installer::class);
         $trackProgress = !$this->input->hasOption('no-progress');
 
-        $this->newlyInstalled = $installer->install(
+        $this->installed = $installer->install(
             new InstallationProgressFormater($this->output, $trackProgress)
         );
     }
 
     private function writeLockFile()
     {
+        $this->output->write('Writing lock file... ');
+
         $lockFile = $this->lockFactory->makeEmpty();
-        $packagesNames = $this->newlyInstalled->getPackagesNames();
+        $packagesNames = $this->installed->getPackagesNames();
 
         foreach ($packagesNames as $packageName) {
             $lockFile->add(
-                $this->newlyInstalled->get($packageName)->getName(),
-                $this->newlyInstalled->get($packageName)->getVersion()
+                $this->installed->get($packageName)->getName(),
+                $this->installed->get($packageName)->getVersion()
             );
         }
 
@@ -162,10 +154,36 @@ class InstallCommand extends BaseCommand
             'deplinks/installed.lock',
             $lockFile->getJson()
         );
+
+        $this->output->writeln('<info>OK</info>');
     }
 
     private function writeAutoloadHeader()
     {
-        // TODO: ...
+        $this->output->write('Generating autoload header... ');
+
+        // Get list of header files from each of the packages.
+        $includes = [];
+        foreach ($this->installed->getPackagesNames() as $packageName) {
+            $package = $this->installed->get($packageName);
+
+            foreach ($package->getLocal()->getIncludeDirs() as $searchDir) {
+                $dir = $this->fs->path('deplinks', $package->getName(), $searchDir);
+                $files = $this->fs->listFiles($dir, '.*\.(h|hpp)');
+                $includes = array_merge($includes, $files);
+            }
+
+            $includes = array_unique($includes);
+        }
+
+        // Write autoload.h header file.
+        $headerText = '#pragma once' . PHP_EOL . PHP_EOL;
+        foreach ($includes as $includeFile) {
+            $headerText .= "#include '$includeFile'" . PHP_EOL;
+        }
+
+        $this->fs->writeFile('deplinks/autoload.h', $headerText);
+
+        $this->output->writeln('<info>OK</info>');
     }
 }

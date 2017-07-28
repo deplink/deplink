@@ -7,13 +7,13 @@ Feature: Install command
       | hello/world | *       |
     And local repository contains packages:
       | package     | version |
-      | hello/world | 1.0.0   |
-    When I run "deplink install --no-progress -v"
+      | hello/world | v1.0.0  |
+    When I run "deplink install --no-progress"
     Then the console output should contains:
       """
       Retrieving installed dependencies... Skipped
       Resolving dependencies tree... OK
-      Dependencies: 1 install, 0 updates, 0 removals
+      Dependencies: 1 installs, 0 updates, 0 removals
         - Installing hello/world (v1.0.0)
       Writing lock file... OK
       Generating autoload header... OK
@@ -57,7 +57,7 @@ Feature: Install command
       """
       Retrieving installed dependencies... OK
       Resolving dependencies tree... OK
-      Dependencies: 2 install, 0 updates, 0 removals
+      Dependencies: 2 installs, 0 updates, 0 removals
         - Installing hello/lipsum (v1.0.0)
         - Installing hello/world (v1.0.0)
       Writing lock file... OK
@@ -90,7 +90,7 @@ Feature: Install command
       """
       Retrieving installed dependencies... OK
       Resolving dependencies tree... OK
-      Dependencies: 2 install, 0 updates, 0 removals
+      Dependencies: 2 installs, 0 updates, 0 removals
         - Installing basic/log (v1.0.0)
         - Installing basic/math (v1.0.0)
       Writing lock file... OK
@@ -162,7 +162,7 @@ Feature: Install command
     And I run "deplink install --no-progress"
     Then the console output should contains:
       """
-      Dependencies: 1 install, 0 updates, 0 removals
+      Dependencies: 1 installs, 0 updates, 0 removals
         - Installing basic/log (v1.0.0)
       """
 
@@ -183,7 +183,7 @@ Feature: Install command
     And I run "deplink install --no-progress"
     Then the console output should contains:
       """
-      Dependencies: 0 install, 1 updates, 0 removals
+      Dependencies: 0 installs, 1 updates, 0 removals
         - Updating basic/log (v1.2.0 -> v2.0.0)
       """
 
@@ -203,7 +203,7 @@ Feature: Install command
     And I run "deplink install --no-progress"
     Then the console output should contains:
       """
-      Dependencies: 1 install, 0 updates, 0 removals
+      Dependencies: 1 installs, 0 updates, 0 removals
         - Installing basic/unit (v1.0.0)
       """
     And command should exit with status code 0

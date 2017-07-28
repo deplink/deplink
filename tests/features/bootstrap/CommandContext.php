@@ -79,6 +79,9 @@ class CommandContext extends BaseContext
      */
     public function theConsoleOutputShouldContains1(PyStringNode $string)
     {
-        Assert::assertContains($string->getRaw(), $this->output);
+        $given = preg_replace('/\s+/', ' ', $this->output);
+        $expected = preg_replace('/\s+/', ' ', $string->getRaw());
+
+        Assert::assertContains($expected, $given);
     }
 }

@@ -79,7 +79,7 @@ class LocalDownloader implements Downloader
     public function download($version, DownloadingProgress $progress = null)
     {
         // Assign dummy progress listener to avoid errors
-        if (!is_callable($progress)) {
+        if (!is_null($progress)) {
             $progress = new DummyDownloadingProgress();
         }
 
