@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="40mm"
+        height="40mm"
+        viewBox="0 0 141.73229 141.73228"
+        id="svg2"
+        version="1.1">
+    <title
+            id="title4244">Deplink Logo
+    </title>
+    <defs
+            id="defs4"/>
+    <g
+            id="g4164">
+        <path
+                style="fill:#dbdbe1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                d="m 68.555776,51.01763 2.594154,71.29281 57.32616,-20.45559 0.25254,-66.038715"
+                id="path4240"/>
+        <path
+                style="fill:#ededf0;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                d="M 12.81362,102.4862 71.2762,122.43671 70.920832,51.943086 13.19243,36.44748"
+                id="path4238"/>
+        <path
+                style="fill:#f6f6f8;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                d="M 13.631165,36.946143 71.02366,55.387841 128.47609,37.138753 72.28636,19.274887 Z"
+                id="path4236"/>
+        <g
+                id="g4232"
+                transform="translate(-189.84823,-21.821126)">
+            <path
+                    id="path4216"
+                    d="M 202.16319,58.394876 260.8719,76.83016 317.38693,59.305516"
+                    style="fill:none;fill-rule:evenodd;stroke:#6184d8;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:3, 3;stroke-dashoffset:0;stroke-opacity:1"/>
+            <path
+                    id="path4218"
+                    d="m 260.74563,76.577621 0.12627,67.301409"
+                    style="fill:none;fill-rule:evenodd;stroke:#6184d8;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:3, 3;stroke-dashoffset:0;stroke-opacity:1"/>
+        </g>
+        <path
+                style="fill:none;fill-rule:evenodd;stroke:#4b4b6c;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                d="M 70.86606,122.1904 128.18748,102.36897 128.36606,36.297543 72.11605,19.511829 13.54463,36.297543 13.36606,102.72611 Z"
+                id="path4214"/>
+    </g>
+</svg>
