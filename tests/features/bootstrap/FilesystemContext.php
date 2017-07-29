@@ -80,7 +80,11 @@ class FilesystemContext extends BaseContext
      */
     public function theFileShouldContains($file, PyStringNode $string)
     {
-        $this->fs->writeFile($file, $string->getRaw());
+        $given = $this->fs->readFile($file);
+        $given = preg_replace('/\s+/', ' ', $given);
+        $expected = preg_replace('/\s+/', ' ', $string->getRaw());
+
+        Assert::assertContains($expected, $given);
     }
 
     /**

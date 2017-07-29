@@ -67,6 +67,10 @@ class DependenciesTreeState
      */
     public function getConstraint($packageName)
     {
+        if (!isset($this->constraints[$packageName])) {
+            return '*';
+        }
+
         return implode(' ', $this->constraints[$packageName]);
     }
 }

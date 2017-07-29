@@ -99,9 +99,9 @@ class LocalDownloader implements Downloader
 
             // Get all files to copy (relative paths)
             $files = $this->fs->listFiles($this->from());
-            foreach ($files as &$file) {
-                $file = mb_substr($file, mb_strlen($this->from()));
-            }
+            $files = array_map(function ($item) {
+                return mb_substr($item, mb_strlen($this->from()));
+            }, $files);
 
             $copiedCounter = 0;
             $filesCount = count($files);

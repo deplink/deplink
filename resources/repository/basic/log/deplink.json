@@ -1,0 +1,6 @@
+{
+    "name": "basic/log",
+    "type": "library",
+    "include": ".",
+    "version": "1.0.0"
+}

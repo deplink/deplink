@@ -23,7 +23,7 @@ Feature: Install command
       """
       #pragma once
 
-      #include "hello/world/include/main.h"
+      #include "hello/world/include/main.hpp"
       """
 
   Scenario: The deplink.json file not exists
@@ -50,12 +50,12 @@ Feature: Install command
       | hello/world | *       |
     And local repository contains packages:
       | package      | version |
-      | hello/world  | 1.0.0   |
-      | hello/lipsum | 1.0.0   |
+      | hello/world  | v1.0.0  |
+      | hello/lipsum | v1.0.0  |
     When I run "deplink install --no-progress"
     Then the console output should contains:
       """
-      Retrieving installed dependencies... OK
+      Retrieving installed dependencies... Skipped
       Resolving dependencies tree... OK
       Dependencies: 2 installs, 0 updates, 0 removals
         - Installing hello/lipsum (v1.0.0)
@@ -68,8 +68,8 @@ Feature: Install command
       """
       #pragma once
 
-      #include "hello/world/include/main.h"
-      #include "hello/lipsum/include/main.h"
+      #include "hello/lipsum/include/code.hpp"
+      #include "hello/world/include/main.hpp"
       """
 
   Scenario: Install only root dev dependencies
@@ -82,13 +82,13 @@ Feature: Install command
       | basic/unit | *       | true  |
     And local repository contains packages:
       | package    | version |
-      | basiclog   | 1.0.0   |
-      | basic/unit | 1.0.0   |
-      | basic/math | 1.0.0   |
+      | basic/log  | v1.0.0  |
+      | basic/unit | v1.0.0  |
+      | basic/math | v1.0.0  |
     When I run "deplink install --no-progress"
     Then the console output should contains:
       """
-      Retrieving installed dependencies... OK
+      Retrieving installed dependencies... Skipped
       Resolving dependencies tree... OK
       Dependencies: 2 installs, 0 updates, 0 removals
         - Installing basic/log (v1.0.0)
@@ -221,6 +221,7 @@ Feature: Install command
   # TODO: Remove packages
   # TODO: Install local package without specified version (default 0.1.0), each installation should reinstall package
   # TODO: Test script callbacks
-  # TODO: --no-dev option
+  # TODO: Different package name than local repository directory
 
   # TODO: install newest available and compatible version (how to test? local repository allows hosting only one version)
+  # TODO: Online repository tests

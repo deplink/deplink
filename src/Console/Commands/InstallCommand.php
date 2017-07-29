@@ -170,6 +170,11 @@ class InstallCommand extends BaseCommand
             foreach ($package->getLocal()->getIncludeDirs() as $searchDir) {
                 $dir = $this->fs->path('deplinks', $package->getName(), $searchDir);
                 $files = $this->fs->listFiles($dir, '.*\.(h|hpp)');
+                $files = array_map(function ($item) {
+                    // Remove deplinks prepend from paths.
+                    return substr($item, strlen('deplinks/'));
+                }, $files);
+
                 $includes = array_merge($includes, $files);
             }
 
@@ -179,7 +184,7 @@ class InstallCommand extends BaseCommand
         // Write autoload.h header file.
         $headerText = '#pragma once' . PHP_EOL . PHP_EOL;
         foreach ($includes as $includeFile) {
-            $headerText .= "#include '$includeFile'" . PHP_EOL;
+            $headerText .= '#include "' . $includeFile . '"' . PHP_EOL;
         }
 
         $this->fs->writeFile('deplinks/autoload.h', $headerText);

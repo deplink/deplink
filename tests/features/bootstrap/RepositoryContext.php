@@ -41,9 +41,11 @@ class RepositoryContext extends BaseContext
             $packageName = $row['package'];
             $versionConstraint = $row['version'];
             if (isset($row['isDev']) && $row['isDev'] == 'true') {
+                Assert::assertArrayHasKey('dev-dependencies', $json);
                 Assert::assertArrayHasKey($packageName, $json['dev-dependencies']);
                 $json['dev-dependencies'][$packageName] = $versionConstraint;
             } else {
+                Assert::assertArrayHasKey('dependencies', $json);
                 Assert::assertArrayHasKey($packageName, $json['dependencies']);
                 $json['dependencies'][$packageName] = $versionConstraint;
             }

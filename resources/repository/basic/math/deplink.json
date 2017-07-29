@@ -1,0 +1,9 @@
+{
+    "name": "basic/math",
+    "type": "library",
+    "include": ".",
+    "dev-dependencies": {
+        "basic/unit": "*"
+    },
+    "version": "v1.0.0"
+}

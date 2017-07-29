@@ -15,7 +15,7 @@ class BaseContext implements Context
      *
      * @var string
      */
-    const ROOT_DIR = __DIR__ . '/../../..';
+    const ROOT_DIR = __DIR__ . '/../../../';
 
     public function __construct()
     {
@@ -28,9 +28,10 @@ class BaseContext implements Context
     public static function prepare()
     {
         $fs = new Filesystem();
+        $path = $fs->path(self::ROOT_DIR, 'temp');
 
-        $fs->touchDir('temp');
-        $fs->setWorkingDir('temp');
+        $fs->touchDir($path);
+        $fs->setWorkingDir($path);
     }
 
     /**

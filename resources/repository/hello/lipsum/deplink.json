@@ -1,0 +1,8 @@
+{
+    "name": "hello/world",
+    "type": "library",
+    "dependencies": {
+        "hello/world": "*"
+    },
+    "version": "v1.0.0"
+}

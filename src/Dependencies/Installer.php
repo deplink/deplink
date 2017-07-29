@@ -160,6 +160,17 @@ class Installer
                 );
             }
         }
+
+        // Sort packages before installation process.
+        usort($this->installs, function (MissingDependencyObject $left, MissingDependencyObject $right) {
+            return strcmp($left->getName(), $right->getName());
+        });
+
+        usort($this->updates, function (OutdatedDependencyObject $left, OutdatedDependencyObject $right) {
+            return strcmp($left->getName(), $right->getName());
+        });
+
+        sort($this->removals);
     }
 
     /**
