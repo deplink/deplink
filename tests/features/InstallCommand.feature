@@ -147,45 +147,26 @@ Feature: Install command
       """
     And command should exit with status code 1
 
-  Scenario: Install locked version of the dependencies
+  Scenario: Update package if locked version is unavailable
     Given there is package which requires:
       | package   | version |
       | basic/log | *       |
     And local repository contains packages:
       | package   | version |
-      | basic/log | 1.0.0   |
+      | basic/log | v1.2.0  |
     When I run "deplink install --no-progress"
-    And remove "deplinks" folder
     And upgrade packages:
       | package   | version |
-      | basic/log | 1.1.0   |
-    And I run "deplink install --no-progress"
-    Then the console output should contains:
-      """
-      Dependencies: 1 installs, 0 updates, 0 removals
-        - Installing basic/log (v1.0.0)
-      """
-
-  Scenario: Update packages which changed version constraint is inconsistent with locked version
-    Given there is package which requires:
-      | package   | version |
-      | basic/log | 1.*     |
-    And local repository contains packages:
-      | package   | version |
-      | basic/log | 1.2.0   |
-    When I run "deplink install --no-progress"
-    And change global package requirements:
-      | package   | version |
-      | basic/log | 2.*     |
-    And upgrade packages:
-      | package   | version |
-      | basic/log | 2.0.0   |
+      | basic/log | v2.0.0  |
     And I run "deplink install --no-progress"
     Then the console output should contains:
       """
       Dependencies: 0 installs, 1 updates, 0 removals
         - Updating basic/log (v1.2.0 -> v2.0.0)
       """
+
+  # TODO: Dependencies tree conflict (deplink.json requires 2.* version, but only 1.* are available)
+  # TODO: Upgrade locked dependency along with deplink.json (requires remote repository)
 
   Scenario: Install package not listed in deplink.lock file
     Given there is package which requires:
@@ -208,6 +189,7 @@ Feature: Install command
       """
     And command should exit with status code 0
 
+  # TODO: Install locked version of the dependencies (require remote repository)
   # TODO: cleanup deplinks directory if installed.lock file is missing
   # TODO: delete mismatches between installed.lock and directory structure
 

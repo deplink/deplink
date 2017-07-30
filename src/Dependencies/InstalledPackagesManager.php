@@ -84,8 +84,8 @@ class InstalledPackagesManager
             return substr($dir, strlen("$outputDir/"));
         };
 
-        $cmodules = $this->fs->listDirs($outputDir, 2);
-        $packages = array_map($dir2package, $cmodules);
+        $deplinks = $this->fs->listDirs($outputDir, 2);
+        $packages = array_map($dir2package, $deplinks);
 
         return $packages;
     }

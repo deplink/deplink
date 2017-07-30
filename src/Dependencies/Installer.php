@@ -150,7 +150,7 @@ class Installer
                 if ($requiredVersion !== $installedVersion) {
                     $this->updates[] = new OutdatedDependencyObject(
                         $package, $installedVersion, $requiredVersion,
-                        $installed->get($package)->getRemote()
+                        $required->get($package)->getRemote()
                     );
                 }
             } else {
