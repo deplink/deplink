@@ -65,7 +65,9 @@ class InstallCommand extends BaseCommand
             ->setHelp('Install dependencies listed in the deplink.lock or in the deplink.json if lock file is missing or outdated.')
             ->addArgument('package', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Name of the packages to install')
             ->addOption('no-progress', null, InputOption::VALUE_NONE,
-                'Outputs only steps without showing the progress')
+                'Outputs only steps without showing dynamic progress')
+            ->addOption('no-dev', null, InputOption::VALUE_NONE,
+                'Skip installation packages from the "dev-dependencies" section')
             ->addOption('working-dir', 'd', InputOption::VALUE_REQUIRED,
                 'Use the given directory as working directory', '.');
     }
@@ -120,7 +122,7 @@ class InstallCommand extends BaseCommand
         $this->output->write('Resolving dependencies tree... ');
 
         $manager = $this->di->get(DependenciesTreeResolver::class);
-        $manager->snapshot();
+        $manager->snapshot(!$this->input->getOption('no-dev'));
 
         $this->states = $manager->getResolvedStates();
         $this->output->writeln('<info>OK</info>');

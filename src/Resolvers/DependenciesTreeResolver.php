@@ -119,8 +119,21 @@ class DependenciesTreeResolver
 
     /**
      * Resolve tree for the current project state.
+     *
+     * @param boolean $includeDev
+     * @throws ConflictsBetweenDependenciesException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Repositories\Exceptions\PackageNotFoundException
+     * @throws \Deplink\Repositories\Exceptions\UnknownRepositoryTypeException
+     * @throws \Deplink\Validators\Exceptions\JsonDecodeException
+     * @throws \Deplink\Validators\Exceptions\ValidationException
+     * @throws \InvalidArgumentException
+     * @throws \Seld\JsonLint\ParsingException
      */
-    public function snapshot()
+    public function snapshot($includeDev = true)
     {
         $this->locked = $this->lockFactory->makeFromFileOrEmpty('deplink.lock');
         $this->project = $this->packageFactory->makeFromDir('.');
@@ -137,7 +150,7 @@ class DependenciesTreeResolver
         /** @var DependencyObject[] $dependencies */
         $dependencies = array_merge(
             $this->project->getDependencies(),
-            $this->project->getDevDependencies()
+            ($includeDev ? $this->project->getDevDependencies() : [])
         );
 
         $state = $this->resolverFactory->makeDependenciesTreeState();

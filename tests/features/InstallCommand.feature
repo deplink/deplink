@@ -72,7 +72,7 @@ Feature: Install command
       #include "hello/world/include/main.hpp"
       """
 
-  Scenario: Install only root dev dependencies
+  Scenario: Install without nested dev dependencies
     Given there is package which requires:
       | package    | version | isDev |
       | basic/log  | *       | true  |
@@ -98,6 +98,29 @@ Feature: Install command
       """
     And command should exit with status code 0
 
+  Scenario: Install without root dev dependencies
+    Given there is package which requires:
+      | package    | version | isDev |
+      | basic/log  | *       | true  |
+      | basic/math | *       | false |
+    And the "basic/math" package requires:
+      | package    | version | isDev |
+      | basic/unit | *       | true  |
+    And local repository contains packages:
+      | package    | version |
+      | basic/math | v1.0.0  |
+    When I run "deplink install --no-progress --no-dev"
+    Then the console output should contains:
+      """
+      Retrieving installed dependencies... Skipped
+      Resolving dependencies tree... OK
+      Dependencies: 1 installs, 0 updates, 0 removals
+        - Installing basic/math (v1.0.0)
+      Writing lock file... OK
+      Generating autoload header... OK
+      """
+    And command should exit with status code 0
+
   Scenario: Skip installation of dev dependencies
     Given there is package which requires:
       | package   | version | isDev |
@@ -105,7 +128,7 @@ Feature: Install command
     When I run "deplink install --no-progress --no-dev"
     Then the console output should contains:
       """
-      Dependencies: 0 install, 0 updates, 0 removals
+      Dependencies: 0 installs, 0 updates, 0 removals
       """
     And command should exit with status code 0
 
