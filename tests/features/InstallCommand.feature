@@ -134,18 +134,18 @@ Feature: Install command
 
   Scenario: Detect dependencies loop
     Given there is package which requires:
-      | package    | version |
-      | loops/libA | *       |
-    And the "loops/libA" package requires:
-      | package    | version |
-      | loops/libB | *       |
-    And the "loops/libB" package requires:
-      | package    | version |
-      | loops/libA | *       |
+      | package     | version |
+      | loops/lib-a | *       |
+    And the "loops/lib-a" package requires:
+      | package     | version |
+      | loops/lib-b | *       |
+    And the "loops/lib-b" package requires:
+      | package     | version |
+      | loops/lib-a | *       |
     When I run "deplink install --no-progress"
     Then the console output should contains:
       """
-      Dependencies loop detected: loops/libA -> loops/libB ... loops/libB -> loops/libA
+      Dependencies loop detected: loops/lib-a -> loops/lib-b -> loops/lib-a
       """
     And command should exit with status code 1
 
@@ -197,8 +197,8 @@ Feature: Install command
       | basic/log | *       |
     And local repository contains packages:
       | package    | version |
-      | basic/log  | 1.0.0   |
-      | basic/unit | 1.0.0   |
+      | basic/log  | v1.0.0  |
+      | basic/unit | v1.0.0  |
     When I run "deplink install --no-progress"
     And change global package requirements:
       | package    | version |

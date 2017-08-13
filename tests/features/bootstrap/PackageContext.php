@@ -1,6 +1,5 @@
 <?php
 
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 
@@ -41,8 +40,23 @@ class PackageContext extends BaseContext
      */
     public function changeGlobalPackageRequirements(TableNode $table)
     {
-        // TODO: overwrite deplink.json dependencies and dev-dependencies
+        $dependencies = [];
+        $devDependencies = [];
+        foreach ($table as $row) {
+            $packageName = $row['package'];
+            $versionConstraint = $row['version'];
+            if (isset($row['isDev']) && $row['isDev'] == 'true') {
+                $devDependencies[$packageName] = $versionConstraint;
+            } else {
+                $dependencies[$packageName] = $versionConstraint;
+            }
+        }
 
-        throw new PendingException();
+        Assert::assertFileExists('deplink.json');
+        $json = json_decode($this->fs->readFile('deplink.json'), true);
+
+        $json['dependencies'] = new \ArrayObject($dependencies);
+        $json['dev-dependencies'] = new \ArrayObject($devDependencies);
+        $this->fs->writeFile('deplink.json', json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }
