@@ -1,0 +1,7 @@
+{
+    "name": "loops/lib-a",
+    "type": "library",
+    "dependencies": {
+        "loops/lib-b": "*"
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace Deplink\Dependencies\Excpetions;
+namespace Deplink\Resolvers\Exceptions;
 
 class DependenciesLoopException extends \Exception
 {

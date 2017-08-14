@@ -88,7 +88,9 @@ class Installer
      * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
      * @throws \Deplink\Environment\Exceptions\InvalidPathException
      * @throws \Deplink\Environment\Exceptions\UnknownException
-     * @throws \Deplink\Locks\Exceptions\DuplicateLockEntryException
+     * @throws \Deplink\Repositories\Exceptions\PackageNotFoundException
+     * @throws \Deplink\Repositories\Exceptions\UnknownRepositoryTypeException
+     * @throws \Deplink\Resolvers\Exceptions\ConflictsBetweenDependenciesException
      * @throws \Deplink\Validators\Exceptions\JsonDecodeException
      * @throws \Deplink\Validators\Exceptions\ValidationException
      * @throws \InvalidArgumentException

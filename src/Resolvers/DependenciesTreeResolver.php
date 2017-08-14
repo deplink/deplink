@@ -11,6 +11,7 @@ use Deplink\Packages\ValueObjects\DependencyObject;
 use Deplink\Repositories\RepositoriesCollection;
 use Deplink\Repositories\RepositoryFactory;
 use Deplink\Resolvers\Exceptions\ConflictsBetweenDependenciesException;
+use Deplink\Resolvers\Exceptions\DependenciesLoopException;
 use Deplink\Versions\VersionComparator;
 
 /**
@@ -197,14 +198,18 @@ class DependenciesTreeResolver
      *
      * @param DependencyObject $dependency
      * @param DependenciesTreeState[] $states
+     * @param string[] $parents
      * @return DependenciesTreeState[]
      * @throws \Deplink\Repositories\Exceptions\PackageNotFoundException
      */
-    private function resolveUnit(DependencyObject $dependency, $states)
+    private function resolveUnit(DependencyObject $dependency, $states, array $parents = [])
     {
         // This variable will store new generated states
         // including this and nested dependencies.
         $resultStates = [];
+
+        // Add current dependency to the parents chains.
+        $parents = array_merge($parents, [$dependency->getPackageName()]);
 
         // Process will iterate over each state, duplicate it and
         // install the same package but in other version for every copy.
@@ -243,9 +248,17 @@ class DependenciesTreeResolver
                 // If package has dependencies then try to match dependency
                 // to previously generated states, merge valid states.
                 foreach ($package->getDependencies() as $nestedDependency) {
+                    // Fail if the dependencies loop has been detected
+                    // (print full invalid dependencies chain).
+                    $nestedDependencyName = $nestedDependency->getPackageName();
+                    if (in_array($nestedDependencyName, $parents)) {
+                        $loopChain = implode(' -> ', $parents);
+                        throw new DependenciesLoopException("Dependencies loop detected: $loopChain -> $nestedDependencyName");
+                    }
+
                     $resultStates = array_merge(
                         $resultStates,
-                        $this->resolveUnit($nestedDependency, $newStates)
+                        $this->resolveUnit($nestedDependency, $newStates, $parents)
                     );
                 }
 
