@@ -149,26 +149,26 @@ Feature: Install command
       """
     And command should exit with status code 1
 
-  Scenario: Detect mismatch between linking type
-    Given there is package which requires:
-      | package              | version   |
-      | linking/any          | *:dynamic |
-      | linking/linkToStatic | *         |
-    And the "linking/linkToStatic" package requires:
-      | package     | version  |
-      | linking/any | *:static |
-    And the "linking/static" package contains:
-      """
-      linking: ["static", "dynamic"]
-      """
-    When I run "deplink install --no-progress"
-    Then the console output should contains:
-      """
-      Mismatch between linking type:
-        - linking/any (dynamic)
-        - linking/linkToStatic -> linking/any (static)
-      """
-    And command should exit with status code 1
+#  Scenario: Detect mismatch between linking type
+#    Given there is package which requires:
+#      | package        | version   |
+#      | linking/any    | *:dynamic |
+#      | linking/static | *         |
+#    And the "linking/static" package requires:
+#      | package     | version  |
+#      | linking/any | *:static |
+#    And the "linking/static" package contains:
+#      """
+#      linking: ["static", "dynamic"]
+#      """
+#    When I run "deplink install --no-progress"
+#    Then the console output should contains:
+#      """
+#      Mismatch between linking type:
+#        - linking/any (dynamic)
+#        - linking/static -> linking/any (static)
+#      """
+#    And command should exit with status code 1
 
   Scenario: Update package if locked version is unavailable
     Given there is package which requires:
