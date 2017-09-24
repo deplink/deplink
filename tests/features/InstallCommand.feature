@@ -149,6 +149,7 @@ Feature: Install command
       """
     And command should exit with status code 1
 
+# TODO: Implement and uncomment below scenario
 #  Scenario: Detect mismatch between linking type
 #    Given there is package which requires:
 #      | package        | version   |
