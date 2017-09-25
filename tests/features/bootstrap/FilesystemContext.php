@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\Assert;
 
 class FilesystemContext extends BaseContext
@@ -102,5 +103,21 @@ class FilesystemContext extends BaseContext
     {
         $this->fs->removeDir($dir);
         Assert::assertDirectoryNotExists($dir);
+    }
+
+    /**
+     * @Given I should have :count of files:
+     */
+    public function iShouldHaveOfFiles($count, TableNode $table)
+    {
+        $left = $count;
+        foreach ($table as $row) {
+            if ($this->fs->existsFile($row['path'])) {
+                $left--;
+            }
+        }
+
+        $found = $count - $left;
+        Assert::assertLessThanOrEqual(0, $left, "Found $found of $count files, $left files left.");
     }
 }

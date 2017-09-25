@@ -59,4 +59,12 @@ class PackageContext extends BaseContext
         $json['dev-dependencies'] = new \ArrayObject($devDependencies);
         $this->fs->writeFile('deplink.json', json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
+
+    /**
+     * @Given /^there is empty package$/
+     */
+    public function thereIsEmptyPackage()
+    {
+        return $this->thereIsPackageWhichRequires(new TableNode([]));
+    }
 }
