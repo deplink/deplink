@@ -24,7 +24,7 @@ return [
         \Deplink\Console\Commands\InstallCommand::class,
         //\Deplink\Console\Commands\ListCommand::class,
         //\Deplink\Console\Commands\UninstallCommand::class,
-        //\Deplink\Console\Commands\BuildCommand::class,
+        \Deplink\Console\Commands\BuildCommand::class,
         //\Deplink\Console\Commands\RebuildCommand::class,
         //\Deplink\Console\Commands\CleanCommand::class,
         //\Deplink\Console\Commands\RunCommand::class,
