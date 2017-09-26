@@ -1,4 +1,5 @@
-clone_folder: c:\projects\deplink
+build: false
+clone_folder: C:\projects\deplink
 
 image:
   - Visual Studio 2015
@@ -8,12 +9,14 @@ platform:
   - x64
 
 init:
-  - SET PATH=C:\cygwin64;%PATH%
+  - SET PATH=C:\MinGW\bin;%PATH%
 
 install:
-  - cinst php --version 7.1.8 --params '/ThreadSafe /InstallDir:c:\tools\php'
-  - cinst composer --version 4.7.0 --params '/DEV=C:\tools\php /PHP=c:\tools\php'
-  - cd c:\projects\deplink && composer install --no-interaction --no-progress --no-suggest
+  - cinst php --version 7.0.1 --allow-empty-checksums
+  - cinst composer --version 4.7.0 --allow-empty-checksums
+  - refreshenv
+  - cd C:\projects\deplink
+  - composer install --no-interaction --no-progress --no-suggest
 
 test_script:
   - composer run-script test
