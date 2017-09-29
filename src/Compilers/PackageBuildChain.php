@@ -170,22 +170,22 @@ class PackageBuildChain
             $outputPath = $this->fs->path($this->workingDir, 'build', $arch, $outputFile);
 
             if ($this->package->getType() === 'project') {
-                $this->makeExecutableArtifacts($arch, $outputPath);
+                $this->makeExecutableArtifacts($outputPath);
             } else {
-                $this->makeLibraryArtifacts($arch, $outputPath);
+                $this->makeLibraryArtifacts($outputPath);
             }
         }
     }
 
-    private function makeExecutableArtifacts($arch, $outputPath)
+    private function makeExecutableArtifacts($outputPath)
     {
         $path = $this->system->toExePath($outputPath);
 
-        $this->fs->touchFile($path);
+        $this->fs->touchDir($this->fs->getDirName($path));
         $this->compiler->buildExecutable($path);
     }
 
-    private function makeLibraryArtifacts($arch, $outputPath)
+    private function makeLibraryArtifacts($outputPath)
     {
         // Static library
         if ($this->package->hasLinkingType('static')) {

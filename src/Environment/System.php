@@ -112,7 +112,7 @@ class System
 
     public function toExePath($outputFile)
     {
-        return $outputFile . $this->getExeExt();
+        return $outputFile;
     }
 
     /**
