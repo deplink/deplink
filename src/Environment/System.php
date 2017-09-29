@@ -102,7 +102,15 @@ class System
         return self::STATIC_LIBRARY[$this->getPlatform()];
     }
 
-    public function getExePath($outputFile)
+    /**
+     * @return string
+     */
+    public function getSharedLibExt()
+    {
+        return self::SHARED_LIBRARY[$this->getPlatform()];
+    }
+
+    public function toExePath($outputFile)
     {
         return $outputFile . $this->getExeExt();
     }
@@ -118,6 +126,14 @@ class System
     }
 
     /**
+     * @return string
+     */
+    public function getLibPrefix()
+    {
+        return self::LIBRARY_PREFIX[$this->getPlatform()];
+    }
+
+    /**
      * @param string $libFile
      * @return string
      */
@@ -127,27 +143,9 @@ class System
 
         $prefix = $this->getLibPrefix();
         $file = $this->fs->getFileName($libFile);
-        $ext = $this->toSharedLibExt();
+        $ext = $this->getSharedLibExt();
 
         return $this->fs->path($dir, $prefix . $file . $ext);
-    }
-
-    /**
-     * @return string
-     */
-    public function getLibPrefix()
-    {
-        return self::LIBRARY_PREFIX[$this->getPlatform()];
-    }
-
-    /**
-     * Get shared library extension.
-     *
-     * @return string
-     */
-    public function toSharedLibExt()
-    {
-        return self::SHARED_LIBRARY[$this->getPlatform()];
     }
 
     /**

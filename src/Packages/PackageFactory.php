@@ -6,6 +6,7 @@ use Deplink\Downloaders\Downloader;
 use Deplink\Environment\Config;
 use Deplink\Environment\Exceptions\InvalidPathException;
 use Deplink\Environment\Filesystem;
+use Deplink\Packages\ValueObjects\CompilerConstraintObject;
 use Deplink\Packages\ValueObjects\DependencyObject;
 use Deplink\Packages\ValueObjects\RepositoryObject;
 use Deplink\Repositories\Repository;
@@ -182,6 +183,11 @@ class PackageFactory
         $package->setVersion($this->get($json, 'version'));
         $package->setIncludeDirs($this->get($json, 'include', 'include'));
         $package->setSourceDirs($this->get($json, 'source', 'src'));
+        $package->setLinkingTypes($this->get($json, 'linking', ['static', 'dynamic']));
+        $package->setArchitectures($this->get($json, 'arch', ['x86', 'x64']));
+
+        $compilers = $this->get($json, 'compilers', []);
+        $package->setCompilers(CompilerConstraintObject::hydrate($compilers));
 
         $dependencies = $this->get($json, 'dependencies', []);
         $package->setDependencies(DependencyObject::hydrate($dependencies));

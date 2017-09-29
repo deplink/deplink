@@ -2,6 +2,7 @@
 
 namespace Deplink\Packages;
 
+use Deplink\Packages\ValueObjects\CompilerConstraintObject;
 use Deplink\Packages\ValueObjects\DependencyObject;
 use Deplink\Packages\ValueObjects\RepositoryObject;
 
@@ -50,27 +51,26 @@ class LocalPackage implements \JsonSerializable
     private $sourceDirs = ['src'];
 
     /**
-     * TODO
-     *
      * @var CompilerConstraintObject[]
      */
     private $compilers = [];
 
     /**
      * TODO
+     *
      * @var PlatformConstraintObject[]
      */
     private $platforms = [];
 
     /**
-     * TODO
-     * @var ArchitectureConstraintObject[]
+     * @var string[]
      */
     private $architectures = [];
 
     /**
-     * TODO
-     * @var LinkingTypeConstraintObject[]
+     * Either static or dynamic.
+     *
+     * @var string[]
      */
     private $linkingTypes = [];
 
@@ -90,12 +90,14 @@ class LocalPackage implements \JsonSerializable
 
     /**
      * TODO
+     *
      * @var MacroObject
      */
     private $macros = [];
 
     /**
      * TODO
+     *
      * @var ScriptConstraintObject
      */
     private $scripts = [];
@@ -286,6 +288,69 @@ class LocalPackage implements \JsonSerializable
     }
 
     /**
+     * @return CompilerConstraintObject[]
+     */
+    public function getCompilers()
+    {
+        return $this->compilers;
+    }
+
+    /**
+     * @param CompilerConstraintObject[] $compilers
+     * @return LocalPackage
+     */
+    public function setCompilers($compilers)
+    {
+        $this->compilers = $compilers;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getLinkingTypes()
+    {
+        return $this->linkingTypes;
+    }
+
+    /**
+     * @param string|string[] $linkingTypes
+     * @return LocalPackage
+     */
+    public function setLinkingTypes($linkingTypes)
+    {
+        $this->linkingTypes = (array)$linkingTypes;
+        return $this;
+    }
+
+    /**
+     * @param string $linkingType
+     * @return bool
+     */
+    public function hasLinkingType($linkingType)
+    {
+        return array_search($linkingType, $this->getLinkingTypes()) !== false;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getArchitectures()
+    {
+        return $this->architectures;
+    }
+
+    /**
+     * @param string|string[] $architectures
+     * @return LocalPackage
+     */
+    public function setArchitectures($architectures)
+    {
+        $this->architectures = (array)$architectures;
+        return $this;
+    }
+
+    /**
      * Specify data which should be serialized to JSON.
      *
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
@@ -296,6 +361,7 @@ class LocalPackage implements \JsonSerializable
     {
         $result = [];
         $attributes = ['name', 'type', 'version'];
+
         foreach ($attributes as $attribute) {
             $value = $this->{$attribute};
             if (!empty($value)) {

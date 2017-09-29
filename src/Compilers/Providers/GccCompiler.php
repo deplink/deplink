@@ -108,7 +108,7 @@ class GccCompiler extends BaseCompiler
             '-Wall', // all warnings messages
             $this->sourceFiles,
             self::ARCHITECTURE_OPTIONS[$this->architecture],
-            ['-o', $this->system->getExePath($outputFile)],
+            ['-o', $this->system->toExePath($outputFile)],
             $this->debugSymbols ? '-g' : [],
             $this->intermediateFiles ? '-save-temps=obj' : [],
             $this->getMacrosCommandOptions(),
@@ -142,21 +142,25 @@ class GccCompiler extends BaseCompiler
      */
     private function getLibrariesCommandOptions()
     {
-        $results = [];
         $libraries = array_merge(
             $this->linkStatic,
             $this->linkDynamic
         );
+
+        $results = [];
         foreach ($libraries as $libPath) {
             $libName = $this->fs->getFileName($libPath);
             $libDir = $this->fs->getDirName($libPath);
+
             if (!empty($libDir)) {
                 $results[] = '-L';
                 $results[] = escapeshellarg($libDir);
             }
+
             $results[] = '-l';
             $results[] = escapeshellarg($libName);
         }
+
         return $results;
     }
 
@@ -173,6 +177,7 @@ class GccCompiler extends BaseCompiler
             $results[] = '-I';
             $results[] = escapeshellarg($dir);
         }
+
         return $results;
     }
 
