@@ -1,14 +1,15 @@
 Feature: Build command
   Build downloaded libraries and project (executable/library).
 
-  Scenario: Empty project
-    Given there is empty package
-    When I run "deplink build --no-progress"
-    Then command should exit with status code 1
-    And the console output should contains:
-      """
-      Neither source nor header files found. By default headers are placed in 'include' dir and source files in 'src' dir (you can configure it by changing 'include' and 'source' keys in deplink.json file).
-      """
+# TODO: Implement and uncomment below scenario
+#  Scenario: Empty project
+#    Given there is empty package
+#    When I run "deplink build --no-progress"
+#    Then command should exit with status code 1
+#    And the console output should contains:
+#      """
+#      Source files not found. By default source files must be placed in the 'src' dir (you can configure it by changing 'source' in deplink.json file).
+#      """
 
   Scenario: Project without dependencies
     Given I am in "custom/name" directory
@@ -30,19 +31,29 @@ Feature: Build command
       Dependencies: 0 installs, 0 updates, 0 removals
       Writing lock file... OK
       Generating autoload header... OK
+      Dependencies: 0 builds, 0 up-to-date
       Building project... OK
       """
     And command should exit with status code 0
     And I should have 1 of files:
-      | path                  |
-      | build/x86/package.exe |
-      | build/x86/package     |
+      | path                      |
+      | build/x86/org-package.exe |
+      | build/x86/org-package     |
 
   Scenario: One dependency not previously installed
     Given I am in "org/package" directory
     And there is package which requires:
       | package     | version |
       | hello/world | *       |
+    And there is "src/main.cpp" file with contents:
+    """
+    #include "autoload.h"
+
+    int main() {
+      Hello::World::sayHello("John");
+      return 0;
+    }
+    """
     When I run "deplink build --no-progress"
     Then the console output should contains:
       """
@@ -52,17 +63,16 @@ Feature: Build command
         - Installing hello/world (v1.0.0)
       Writing lock file... OK
       Generating autoload header... OK
-      Dependencies: 2 builds, 0 up-to-date
-        - Building hello/world (x86)
-        - Building hello/world (x64)
+      Dependencies: 1 builds, 0 up-to-date
+        - Building hello/world
       Building project... OK
       """
     And command should exit with status code 0
     And I should have 1 of files:
-      | path                  |
-      | build/x86/package.exe |
-      | build/x86/package     |
+      | path                      |
+      | build/x86/org-package.exe |
+      | build/x86/org-package     |
     And I should have 1 of files:
-      | path                  |
-      | build/x64/package.exe |
-      | build/x64/package     |
+      | path                      |
+      | build/x64/org-package.exe |
+      | build/x64/org-package     |

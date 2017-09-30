@@ -5,6 +5,7 @@ namespace Deplink\Dependencies;
 use Deplink\Environment\Config;
 use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
+use Deplink\Packages\PackageFactory;
 
 /**
  * List installed dependencies from structure in deplinks directory
@@ -43,17 +44,28 @@ class InstalledPackagesManager
     private $config;
 
     /**
+     * @var PackageFactory
+     */
+    private $packageFactory;
+
+    /**
      * Observer constructor.
      *
      * @param Filesystem $fs
      * @param LockFactory $lockFactory
      * @param Config $config
+     * @param PackageFactory $packageFactory
      */
-    public function __construct(Filesystem $fs, LockFactory $lockFactory, Config $config)
-    {
+    public function __construct(
+        Filesystem $fs,
+        LockFactory $lockFactory,
+        Config $config,
+        PackageFactory $packageFactory
+    ) {
         $this->fs = $fs;
         $this->lockFactory = $lockFactory;
         $this->config = $config;
+        $this->packageFactory = $packageFactory;
     }
 
     /**
@@ -122,7 +134,8 @@ class InstalledPackagesManager
 
         $this->installed = new DependenciesCollection();
         foreach ($installed as $name => $version) {
-            $this->installed->add($name, $version);
+            $local = $this->packageFactory->makeFromDir("deplinks/$name");
+            $this->installed->add($name, $version, $local);
         }
 
         $this->snapshotAt = new \DateTime();

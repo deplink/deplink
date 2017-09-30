@@ -122,10 +122,14 @@ class PackageBuildChain
             $this->package = $this->packageFactory->makeFromDir('.');
             $this->compiler = $this->compilerFactory->negotiate($this->package->getCompilers());
 
-            $this->setCompilerOptions();
-            $this->setCompilerMacros();
-            $this->linkLibraries();
-            $this->makeArtifacts();
+            foreach ($this->package->getArchitectures() as $arch) {
+                $this->compiler->reset();
+
+                $this->setCompilerOptions($arch);
+                $this->setCompilerMacros($arch);
+                $this->linkLibraries($arch);
+                $this->makeArtifacts($arch);
+            }
         } catch (\Exception $e) {
             throw new BuildingPackageException("Exception occurred while building the {$this->package->getName()} package.", 0, $e);
         } finally {
@@ -133,7 +137,7 @@ class PackageBuildChain
         }
     }
 
-    private function setCompilerOptions()
+    private function setCompilerOptions($arch)
     {
         foreach ($this->package->getSourceDirs() as $srcDir) {
             $files = $this->fs->listFiles($srcDir, '.*\.(c|cpp)');
@@ -150,57 +154,69 @@ class PackageBuildChain
         }
     }
 
-    private function setCompilerMacros()
+    private function setCompilerMacros($arch)
     {
         // TODO: ->addMacro()
     }
 
-    private function linkLibraries()
+    private function linkLibraries($arch)
     {
-        // TODO: ->addSharedLibrary()
-        // TODO: ->addStaticLibrary()
+        $dependencies = $this->package->getDependencies();
+        if ($this->debugMode) {
+            $dependencies = array_merge(
+                $this->package->getDevDependencies(),
+                $dependencies
+            );
+        }
+
+        foreach ($dependencies as $dependency) {
+            $linkingType = $dependency->getLinkingConstraint()[0];
+
+            $libName = str_replace('/', '-', $dependency->getPackageName());
+            $libFile = $this->fs->path($this->dependenciesDir, $dependency->getPackageName(), 'build', $arch, $libName);
+
+            if ($linkingType === 'static') {
+                $this->compiler->addStaticLibrary($libFile, []);
+            } else if ($linkingType === 'shared') {
+                $this->compiler->addSharedLibrary($libFile, []);
+            } else {
+                // TODO: Throw an exception
+            }
+        }
     }
 
-    private function makeArtifacts()
+    private function makeArtifacts($arch)
     {
-        foreach ($this->package->getArchitectures() as $arch) {
-            $this->compiler->setArchitecture($arch);
+        $this->compiler->setArchitecture($arch);
 
-            $outputFile = explode('/', $this->package->getName())[1];
-            $outputPath = $this->fs->path($this->workingDir, 'build', $arch, $outputFile);
+        $outputFile = str_replace('/', '-', $this->package->getName());
+        $outputPath = $this->fs->path('build', $arch, $outputFile);
 
-            if ($this->package->getType() === 'project') {
-                $this->makeExecutableArtifacts($outputPath);
-            } else {
-                $this->makeLibraryArtifacts($outputPath);
-            }
+        if ($this->package->getType() === 'project') {
+            $this->makeExecutableArtifacts($outputPath);
+        } else {
+            $this->makeLibraryArtifacts($outputPath);
         }
     }
 
     private function makeExecutableArtifacts($outputPath)
     {
-        $path = $this->system->toExePath($outputPath);
-
-        $this->fs->touchDir($this->fs->getDirName($path));
-        $this->compiler->buildExecutable($path);
+        $this->fs->touchDir($this->fs->getDirName($outputPath));
+        $this->compiler->buildExecutable($outputPath);
     }
 
     private function makeLibraryArtifacts($outputPath)
     {
         // Static library
         if ($this->package->hasLinkingType('static')) {
-            $path = $this->system->toStaticLibPath($outputPath);
-
-            $this->fs->touchDir($this->fs->getDirName($path));
-            $this->compiler->buildStaticLibrary($path);
+            $this->fs->touchDir($this->fs->getDirName($outputPath));
+            $this->compiler->buildStaticLibrary($outputPath);
         }
 
         // Shared library
         if ($this->package->hasLinkingType('dynamic')) {
-            $path = $this->system->toSharedLibPath($outputPath);
-
-            $this->fs->touchDir($this->fs->getDirName($path));
-            $this->compiler->buildSharedLibrary($path);
+            $this->fs->touchDir($this->fs->getDirName($outputPath));
+            $this->compiler->buildSharedLibrary($outputPath);
         }
     }
 }

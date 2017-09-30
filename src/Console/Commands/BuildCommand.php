@@ -4,6 +4,9 @@ namespace Deplink\Console\Commands;
 
 use Deplink\Compilers\CompilerFactory;
 use Deplink\Console\BaseCommand;
+use Deplink\Dependencies\HierarchyFinder;
+use Deplink\Dependencies\InstalledPackagesManager;
+use Deplink\Dependencies\ValueObjects\DependencyObject;
 use Deplink\Environment\Filesystem;
 use DI\Container;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -17,16 +20,35 @@ class BuildCommand extends BaseCommand
     private $factory;
 
     /**
+     * @var HierarchyFinder
+     */
+    private $hierarchyFinder;
+
+    /**
+     * @var InstalledPackagesManager
+     */
+    private $packagesManager;
+
+    /**
      * InitCommand constructor.
      *
      * @param Filesystem $fs
      * @param Container $di
      * @param CompilerFactory $factory
+     * @param HierarchyFinder $hierarchyFinder
+     * @param InstalledPackagesManager $packagesManager
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    public function __construct(Filesystem $fs, Container $di, CompilerFactory $factory)
-    {
+    public function __construct(
+        Filesystem $fs,
+        Container $di,
+        CompilerFactory $factory,
+        HierarchyFinder $hierarchyFinder,
+        InstalledPackagesManager $packagesManager
+    ) {
         $this->factory = $factory;
+        $this->hierarchyFinder = $hierarchyFinder;
+        $this->packagesManager = $packagesManager;
 
         parent::__construct($fs, $di);
     }
@@ -75,7 +97,24 @@ class BuildCommand extends BaseCommand
 
     private function buildDependencies()
     {
-        // TODO: ...
+        $buildQueue = $this->getPackagesToBuild();
+
+        // Get and print metadata
+        $builds = $this->getRequiredBuildsCount($buildQueue);
+        $upToDate = $this->getUpToDateBuildsCount($buildQueue);
+
+        $this->output->writeln("Dependencies: <info>$builds builds</info>, <info>$upToDate up-to-date</info>");
+
+        // Build dependencies
+        $dependenciesAbsPath = $this->fs->path($this->fs->getWorkingDir(), 'deplinks');
+        foreach ($buildQueue as $packageName) {
+            $this->output->writeln("  - Building <info>$packageName</info>");
+
+            $builder = $this->factory->makeBuildChain("deplinks/$packageName");
+            $builder->setDependenciesDir($dependenciesAbsPath)
+                ->debugMode(!$this->input->getOption('prod'))
+                ->build();
+        }
     }
 
     private function buildProject()
@@ -84,5 +123,65 @@ class BuildCommand extends BaseCommand
         $builder->setDependenciesDir('deplinks')
             ->debugMode(!$this->input->getOption('prod'))
             ->build();
+    }
+
+    /**
+     * Get packages which should be build (not built previously),
+     * results are sorted in the build order.
+     *
+     * @return string[]
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Dependencies\Excpetions\DependencyNotExistsException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Validators\Exceptions\JsonDecodeException
+     * @throws \Deplink\Validators\Exceptions\ValidationException
+     * @throws \InvalidArgumentException
+     * @throws \Seld\JsonLint\ParsingException
+     */
+    private function getPackagesToBuild()
+    {
+        $this->packagesManager->snapshot();
+        $dependencies = $this->packagesManager->getInstalled();
+
+        $this->hierarchyFinder->snapshot();
+        $sortedPackages = $this->hierarchyFinder->getSorted();
+
+        $toBuild = [];
+        foreach ($sortedPackages as $packageName) {
+            $package = $dependencies->get($packageName);
+            if (!$this->isBuilt($package)) {
+                $toBuild[] = $packageName;
+            }
+        }
+
+        return $toBuild;
+    }
+
+    private function isBuilt(DependencyObject $package)
+    {
+        return $this->fs->existsDir($this->fs->path('deplinks', $package->getName(), 'build'));
+    }
+
+    /**
+     * @param string[] $buildQueue
+     * @return int
+     */
+    private function getRequiredBuildsCount($buildQueue)
+    {
+        return count($buildQueue);
+    }
+
+    /**
+     * @param string[] $buildQueue
+     * @return int
+     */
+    private function getUpToDateBuildsCount($buildQueue)
+    {
+        $dependencies = $this->packagesManager->getInstalled();
+        $totalCount = count($dependencies->getPackagesNames());
+
+        return $totalCount - $this->getRequiredBuildsCount($buildQueue);
     }
 }

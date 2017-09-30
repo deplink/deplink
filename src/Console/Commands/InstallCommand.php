@@ -105,6 +105,7 @@ class InstallCommand extends BaseCommand
             return;
         }
 
+        /** @var InstalledPackagesManager $manager */
         $manager = $this->di->get(InstalledPackagesManager::class);
         $manager->snapshot();
 
