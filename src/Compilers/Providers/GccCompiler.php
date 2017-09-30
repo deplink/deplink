@@ -46,14 +46,14 @@ class GccCompiler extends BaseCompiler
     {
         $this->fs = $fs;
         $this->system = $system;
-        $this->preapre();
+        $this->prepare();
     }
 
     /**
      * Search gcc in system and set
      * required flags and version number.
      */
-    private function preapre()
+    private function prepare()
     {
         try {
             $this->getVersion();
@@ -73,14 +73,24 @@ class GccCompiler extends BaseCompiler
     {
         $output = [];
         $exitCode = 0;
-        exec('gcc -dumpversion', $output, $exitCode);
+
+        // Example output:
+        // ---------------------------------------------------------------------------
+        // gcc (tdm64-1) 5.1.0
+        // Copyright (C) 2015 Free Software Foundation, Inc.
+        // This is free software; see the source for copying conditions.  There is NO
+        // warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+        // ---------------------------------------------------------------------------
+        exec('gcc --version', $output, $exitCode);
         if ($exitCode != 0) {
             throw new CompilerNotFoundException("The gcc compiler couldn't be found. Check if the gcc is added to your path environment variables.");
         }
+
         $matches = [];
-        if (preg_match('/^[0-9]+\.[0-9]+\.[0-9]+$/', $output[0], $matches) != 1) {
+        if (preg_match('/[0-9]+\.[0-9]+\.[0-9]+$/', $output[0], $matches) != 1) {
             throw new UnknownCompilerVersionException("The gcc compiler was found, but failed at establishing the compiler version. Please open the issue and attach result of the 'gcc --version', thanks!");
         }
+
         return $matches[0];
     }
 
@@ -95,6 +105,7 @@ class GccCompiler extends BaseCompiler
         if (!in_array($arch, $available)) {
             throw new \InvalidArgumentException("Architecture '$arch' isn't supported.");
         }
+
         parent::setArchitecture($arch);
         return $this;
     }
@@ -131,6 +142,7 @@ class GccCompiler extends BaseCompiler
             $results[] = '-D';
             $results[] = "$name=\"$value\"";
         }
+
         return $results;
     }
 
