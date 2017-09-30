@@ -6,7 +6,7 @@ php:
   - 7.1
 
 before_install:
-  - sudo apt-get install gcc-multilib
+  - sudo apt-get install gcc-multilib g++-multilib
   - sudo apt-get install gdb
 
 install:

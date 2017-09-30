@@ -8,13 +8,11 @@ platform:
   - x86
   - x64
 
-init:
-  - SET PATH=C:\MinGW\bin;%PATH%
-
 install:
   - cinst php --version 7.0.1 --allow-empty-checksums
   - cinst composer --version 4.7.0 --allow-empty-checksums
   - refreshenv
+  - set path=C:\MinGW\bin;%PATH%
   - cd C:\projects\deplink
   - composer install --no-interaction --no-progress --no-suggest
   - gcc --version
