@@ -17,6 +17,7 @@ install:
   - refreshenv
   - cd C:\projects\deplink
   - composer install --no-interaction --no-progress --no-suggest
+  - gcc --version
 
 test_script:
   - composer run-script test

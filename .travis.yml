@@ -14,6 +14,7 @@ install:
 
 before_script:
   - phpenv config-add .travis.php.ini
+  - gcc --version
 
 script:
   - composer run-script test

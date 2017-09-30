@@ -72,7 +72,3 @@ Feature: Build command
       | path                      |
       | build/x86/org-package.exe |
       | build/x86/org-package     |
-    And I should have 1 of files:
-      | path                      |
-      | build/x64/org-package.exe |
-      | build/x64/org-package     |
