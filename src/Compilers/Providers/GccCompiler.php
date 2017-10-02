@@ -222,6 +222,7 @@ class GccCompiler extends BaseCompiler
         $this->run('gcc',
             '-c', // compile and assemble, but do not link
             '-Wall', // all warnings messages
+            //'-fPIC', // if supported emit position-independent code
             $this->sourceFiles,
             ['-o', $objOutput],
             $this->debugSymbols ? '-g' : [],

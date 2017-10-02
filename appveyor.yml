@@ -2,7 +2,7 @@ build: false
 clone_folder: C:\projects\deplink
 
 image:
-  - Visual Studio 2015
+  - Visual Studio 2017
 
 platform:
   - x86
@@ -10,9 +10,9 @@ platform:
 
 install:
   - cinst php --version 7.0.1 --allow-empty-checksums
+  - cinst mingw --version 5.3.0 --allow-empty-checksums
   - cinst composer --version 4.7.0 --allow-empty-checksums
   - refreshenv
-  - set path=C:\MinGW\bin;%PATH%
   - cd C:\projects\deplink
   - composer install --no-interaction --no-progress --no-suggest
   - gcc --version
