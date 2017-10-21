@@ -17,13 +17,13 @@ use Deplink\Versions\VersionFinderFactory;
  * which represents the organizations. Each organization directory contains
  * directories which represents the specified organization package.
  *
- * Each package directory must contains valid cbuilder.json file.
+ * Each package directory must contains valid deplink.json file.
  *
  * Example structure:
  * - root_dir/company_name/console/...
  * - root_dir/company_name/di_container/...
  * - root_dir/org_1/package_name/...
- *   root_dir/org_1/package_name/cbuilder.json
+ *   root_dir/org_1/package_name/deplink.json
  */
 class LocalRepository implements Repository
 {
