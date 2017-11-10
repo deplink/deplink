@@ -1,5 +1,8 @@
 <?php
 
+// ATTENTION: Allow write-access for the phar archives,
+//            open php.ini and set phar.readonly to off.
+
 define('ROOT_DIR', __DIR__ . '/..');
 
 // Load phar config file.
