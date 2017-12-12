@@ -6,6 +6,8 @@ default:
         cli:
             paths:
               - %paths.base%/tests/features
+            filters:
+              tags: "~@unimplemented"
             contexts:
               - CommandContext
               - FilesystemContext

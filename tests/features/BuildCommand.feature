@@ -1,15 +1,15 @@
 Feature: Build command
   Build downloaded libraries and project (executable/library).
 
-# TODO: Implement and uncomment below scenario
-#  Scenario: Empty project
-#    Given there is empty package
-#    When I run "deplink build --no-progress"
-#    Then command should exit with status code 1
-#    And the console output should contains:
-#      """
-#      Source files not found. By default source files must be placed in the 'src' dir (you can configure it by changing 'source' in deplink.json file).
-#      """
+  @unimplemented
+  Scenario: Empty project
+    Given there is empty package
+    When I run "deplink build --no-progress"
+    Then command should exit with status code 1
+    And the console output should contains:
+      """
+      Source files not found. By default source files must be placed in the 'src' dir (you can configure it by changing 'source' in deplink.json file).
+      """
 
   Scenario: Project without dependencies
     Given I am in "custom/name" directory
