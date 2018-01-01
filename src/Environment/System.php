@@ -36,6 +36,10 @@ class System
         self::MAC => 'lib',
     ];
 
+    const PLATFORMS = ['windows', 'linux', 'mac'];
+
+    const ARCHITECTURES = ['x86', 'x64'];
+
     /**
      * @var Filesystem
      */

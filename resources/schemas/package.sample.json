@@ -39,8 +39,13 @@
     },
     "repositories": [
         {
-            "type": "file",
+            "type": "local",
             "src": "path/to/repo"
         }
-    ]
+    ],
+    "config": {
+        "compilers": {
+            "gcc:linux": "-fPIC"
+        }
+    }
 }

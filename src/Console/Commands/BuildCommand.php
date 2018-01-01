@@ -57,8 +57,8 @@ class BuildCommand extends BaseCommand
     {
         $this->setName('build')
             ->setDescription('Build project and related project dependencies')
-            ->addOption('prod', null, InputOption::VALUE_NONE,
-                'Include debug symbols and intermediate artifacts')
+            ->addOption('no-dev', null, InputOption::VALUE_NONE,
+                'Disable debug symbols and intermediate artifacts')
             ->addOption('no-progress', null, InputOption::VALUE_NONE,
                 'Outputs only steps without showing dynamic progress')
             ->addOption('working-dir', 'd', InputOption::VALUE_REQUIRED,
@@ -86,7 +86,7 @@ class BuildCommand extends BaseCommand
     private function installDependencies()
     {
         $arguments = new ArrayInput([
-            '--no-dev' => $this->input->getOption('prod'),
+            '--no-dev' => $this->input->getOption('no-dev'),
             '--no-progress' => $this->input->getOption('no-progress'),
             '--working-dir' => $this->input->getOption('working-dir'),
         ]);
@@ -112,7 +112,7 @@ class BuildCommand extends BaseCommand
 
             $builder = $this->factory->makeBuildChain("deplinks/$packageName");
             $builder->setDependenciesDir($dependenciesAbsPath)
-                ->debugMode(!$this->input->getOption('prod'))
+                ->debugMode(!$this->input->getOption('no-dev'))
                 ->build();
         }
     }
@@ -121,7 +121,7 @@ class BuildCommand extends BaseCommand
     {
         $builder = $this->factory->makeBuildChain('.');
         $builder->setDependenciesDir('deplinks')
-            ->debugMode(!$this->input->getOption('prod'))
+            ->debugMode(!$this->input->getOption('no-dev'))
             ->build();
     }
 

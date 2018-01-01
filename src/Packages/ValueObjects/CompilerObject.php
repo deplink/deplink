@@ -2,7 +2,7 @@
 
 namespace Deplink\Packages\ValueObjects;
 
-class CompilerConstraintObject
+class CompilerObject
 {
     /**
      * @var string
@@ -36,7 +36,7 @@ class CompilerConstraintObject
 
     /**
      * @param string $name
-     * @return CompilerConstraintObject
+     * @return CompilerObject
      */
     public function setName($name)
     {
@@ -54,7 +54,7 @@ class CompilerConstraintObject
 
     /**
      * @param string $versionConstraint
-     * @return CompilerConstraintObject
+     * @return CompilerObject
      */
     public function setVersionConstraint($versionConstraint)
     {
@@ -66,14 +66,13 @@ class CompilerConstraintObject
      * Convert raw array to object.
      *
      * @param object|array $compilers
-     * @return CompilerConstraintObject[]
-     * @throws \InvalidArgumentException
+     * @return CompilerObject[]
      */
     public static function hydrate($compilers)
     {
         $result = [];
         foreach ($compilers as $compilerName => $versionConstraint) {
-            $result[] = new CompilerConstraintObject(
+            $result[] = new CompilerObject(
                 $compilerName, $versionConstraint
             );
         }

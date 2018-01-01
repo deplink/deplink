@@ -46,14 +46,14 @@ Feature: Build command
       | package     | version |
       | hello/world | *       |
     And there is "src/main.cpp" file with contents:
-    """
-    #include "autoload.h"
+      """
+      #include "autoload.h"
 
-    int main() {
-      Hello::World::sayHello("John");
-      return 0;
-    }
-    """
+      int main() {
+        Hello::World::sayHello("John");
+        return 0;
+      }
+      """
     When I run "deplink build --no-progress"
     Then the console output should contains:
       """
@@ -72,3 +72,33 @@ Feature: Build command
       | path                      |
       | build/x86/org-package.exe |
       | build/x86/org-package     |
+
+  Scenario: Custom compiler options for x64 build only
+    Given there is empty package
+    And there is "deplink.json" file with contents:
+      """
+      {
+        "name": "test/package",
+        "type": "project",
+        "config": {
+          "compilers": {
+            "gcc:x64": "-save-temps=obj"
+          }
+        }
+      }
+      """
+    And there is "src/main.cpp" file with contents:
+      """
+      #include <cstdio>
+
+      int main() {
+        return 0;
+      }
+      """
+    # Now we build with disabled intermediate files, but
+    # for x64 build these files should still be available
+    # because -save-temps option was added manually.
+    When I run "deplink build --no-dev --no-progress"
+    Then command should exit with status code 0
+    And I should have file "build/x64/test-package.o"
+    And I shouldn't have file "build/x86/test-package.o"

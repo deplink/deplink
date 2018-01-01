@@ -2,7 +2,8 @@
 
 namespace Deplink\Packages;
 
-use Deplink\Packages\ValueObjects\CompilerConstraintObject;
+use Deplink\Packages\ValueObjects\CompilerObject;
+use Deplink\Packages\ValueObjects\ConstraintObject;
 use Deplink\Packages\ValueObjects\DependencyObject;
 use Deplink\Packages\ValueObjects\RepositoryObject;
 
@@ -51,7 +52,7 @@ class LocalPackage implements \JsonSerializable
     private $sourceDirs = ['src'];
 
     /**
-     * @var CompilerConstraintObject[]
+     * @var CompilerObject[]
      */
     private $compilers = [];
 
@@ -106,6 +107,13 @@ class LocalPackage implements \JsonSerializable
      * @var RepositoryObject[]
      */
     private $repositories = [];
+
+    /**
+     * Additional configuration without strict format.
+     *
+     * @var ConstraintObject
+     */
+    private $config;
 
     /**
      * Dir where the json file is located.
@@ -288,7 +296,7 @@ class LocalPackage implements \JsonSerializable
     }
 
     /**
-     * @return CompilerConstraintObject[]
+     * @return CompilerObject[]
      */
     public function getCompilers()
     {
@@ -296,7 +304,7 @@ class LocalPackage implements \JsonSerializable
     }
 
     /**
-     * @param CompilerConstraintObject[] $compilers
+     * @param CompilerObject[] $compilers
      * @return LocalPackage
      */
     public function setCompilers($compilers)
@@ -347,6 +355,43 @@ class LocalPackage implements \JsonSerializable
     public function setArchitectures($architectures)
     {
         $this->architectures = (array)$architectures;
+        return $this;
+    }
+
+    /**
+     * Access config using dot notation.
+     *
+     * For example the: $package->getConfig('compiler.gcc')
+     * will resolve the json key: "config": { "compiler": { "gcc": <value> }}
+     *
+     * Last key in json can contains additional constraints:
+     * "config": { "compiler": { "gcc:linux": <value> }}
+     *
+     * @param string $key Key in dot notation.
+     * @param mixed $default
+     * @param string[] $constraints
+     * @return mixed
+     */
+    public function getConfig($key, $default = null, array $constraints = [])
+    {
+        return $this->config->get($key, $default, $constraints);
+    }
+
+    /**
+     * @return ConstraintObject
+     */
+    public function getConfigObject()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param ConstraintObject $config
+     * @return LocalPackage
+     */
+    public function setConfig(ConstraintObject $config)
+    {
+        $this->config = $config;
         return $this;
     }
 

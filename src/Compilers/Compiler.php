@@ -102,6 +102,14 @@ interface Compiler
     public function buildSharedLibrary($outputFile);
 
     /**
+     * Set default compiler arguments.
+     *
+     * @param string|string[] $args
+     * @return $this
+     */
+    public function setDefaultArgs($args);
+
+    /**
      * Reset to the initial configuration.
      *
      * @return $this

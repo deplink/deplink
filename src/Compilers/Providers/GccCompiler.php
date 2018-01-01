@@ -8,8 +8,6 @@ use Deplink\Environment\Filesystem;
 use Deplink\Environment\System;
 
 /**
- * TODO: Optimization level (-O option flag)
- *
  * @link https://gcc.gnu.org/
  * @link http://www.mingw.org/ (Windows)
  * @link https://cygwin.com/ (Windows)
@@ -124,7 +122,8 @@ class GccCompiler extends BaseCompiler
             $this->intermediateFiles ? '-save-temps=obj' : [],
             $this->getMacrosCommandOptions(),
             $this->getLibrariesCommandOptions(),
-            $this->getIncludeDirsCommandOptions()
+            $this->getIncludeDirsCommandOptions(),
+            $this->getDefaultArgs()
         );
     }
 
@@ -215,21 +214,37 @@ class GccCompiler extends BaseCompiler
     }
 
     /**
+     * @return string[]
+     */
+    public function getDefaultArgs()
+    {
+        if (!empty($this->defaultArgs)) {
+            return $this->defaultArgs;
+        }
+
+        $args = ['-Wall', '-O3'];
+        if ($this->system->isPlatform(System::LINUX)) {
+            $args[] = '-fPIC';
+        }
+
+        return $args;
+    }
+
+    /**
      * @param string $objOutput Object output path.
      */
     private function buildObjectFile($objOutput)
     {
         $this->run('gcc',
             '-c', // compile and assemble, but do not link
-            '-Wall', // all warnings messages
-            //'-fPIC', // if supported emit position-independent code
             $this->sourceFiles,
             ['-o', $objOutput],
             $this->debugSymbols ? '-g' : [],
             $this->intermediateFiles ? '-save-temps=obj' : [],
             self::ARCHITECTURE_OPTIONS[$this->architecture],
             $this->getMacrosCommandOptions(),
-            $this->getIncludeDirsCommandOptions()
+            $this->getIncludeDirsCommandOptions(),
+            $this->getDefaultArgs()
         );
     }
 
@@ -248,6 +263,7 @@ class GccCompiler extends BaseCompiler
             '-shared',
             self::ARCHITECTURE_OPTIONS[$this->architecture],
             ['-o', $this->system->toSharedLibPath($outputFile)],
+            $this->getDefaultArgs(),
             $objPath
         );
     }

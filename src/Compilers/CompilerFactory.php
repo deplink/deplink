@@ -4,7 +4,7 @@ namespace Deplink\Compilers;
 
 use Deplink\Compilers\Exceptions\CompilerNotFoundException;
 use Deplink\Environment\Config;
-use Deplink\Packages\ValueObjects\CompilerConstraintObject;
+use Deplink\Packages\ValueObjects\CompilerObject;
 use Deplink\Versions\VersionComparator;
 use DI\Container;
 
@@ -59,7 +59,7 @@ class CompilerFactory
      * Get first compiler which is available
      * and match given version constraint.
      *
-     * @param CompilerConstraintObject[] $compilers
+     * @param CompilerObject[] $compilers
      * @return Compiler
      * @throws CompilerNotFoundException
      * @throws \DI\DependencyException
@@ -136,5 +136,26 @@ class CompilerFactory
         return $this->di->make(PackageBuildChain::class, [
             'dir' => $dir,
         ]);
+    }
+
+    /**
+     * @param Compiler $compiler
+     * @return string
+     * @throws CompilerNotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     */
+    public function getCompilerNameByClass(Compiler $compiler)
+    {
+        $refProvider = get_class($compiler);
+
+        $providers = $this->config->get("compilers.providers");
+        foreach ($providers as $name => $provider) {
+            if ($provider === $refProvider) {
+                return $name;
+            }
+        }
+
+        throw new CompilerNotFoundException("Cannot find name for compiler, the given '$refProvider'' compiler is not supported.");
     }
 }

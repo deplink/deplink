@@ -3,6 +3,7 @@
 namespace Deplink\Compilers;
 
 use Deplink\Compilers\Exceptions\BuildingPackageException;
+use Deplink\Environment\Config;
 use Deplink\Environment\Filesystem;
 use Deplink\Environment\System;
 use Deplink\Packages\LocalPackage;
@@ -66,8 +67,9 @@ class PackageBuildChain
     /**
      * @param CompilerFactory $compilerFactory
      * @param PackageFactory $packageFactory
-     * @param System $system
      * @param Filesystem $fs
+     * @param System $system
+     * @param Config $config
      * @param string $dir
      */
     public function __construct(
@@ -137,6 +139,12 @@ class PackageBuildChain
         }
     }
 
+    /**
+     * @param string $arch
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws Exceptions\CompilerNotFoundException
+     */
     private function setCompilerOptions($arch)
     {
         foreach ($this->package->getSourceDirs() as $srcDir) {
@@ -144,9 +152,17 @@ class PackageBuildChain
             $this->compiler->addSourceFiles($files);
         }
 
+        // Get custom compiler arguments from deplink.json file.
+        $compilerName = $this->compilerFactory->getCompilerNameByClass($this->compiler);
+        $this->package->getConfigObject()->setGroups(System::PLATFORMS, System::ARCHITECTURES);
+        $customArgs = $this->package->getConfig("compilers.$compilerName", [], [
+            $this->system->getPlatform(), $arch,
+        ]);
+
         $this->compiler
             ->addIncludeDirs($this->package->getIncludeDirs())
-            ->addIncludeDirs($this->dependenciesDir);
+            ->addIncludeDirs($this->dependenciesDir)
+            ->setDefaultArgs($customArgs);
 
         if ($this->debugMode) {
             $this->compiler->withDebugSymbols()

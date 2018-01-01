@@ -57,6 +57,11 @@ abstract class BaseCompiler implements Compiler
     protected $linkDynamic = [];
 
     /**
+     * @var string[]
+     */
+    protected $defaultArgs = [];
+
+    /**
      * Check whether compiler is supported
      * and can be used to perform compilations.
      *
@@ -206,6 +211,18 @@ abstract class BaseCompiler implements Compiler
         $command = implode(' ', array_map($arrToString, $args));
 
         exec($command);
+    }
+
+    /**
+     * Set default compiler arguments.
+     *
+     * @param string|string[] $args
+     * @return $this
+     */
+    public function setDefaultArgs($args)
+    {
+        $this->defaultArgs = (array)$args;
+        return $this;
     }
 
     /**
