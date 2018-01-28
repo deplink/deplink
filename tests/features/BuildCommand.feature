@@ -102,3 +102,24 @@ Feature: Build command
     Then command should exit with status code 0
     And I should have file "build/x64/test-package.o"
     And I shouldn't have file "build/x86/test-package.o"
+
+  Scenario: Copy libraries to build directory
+    Given I am in "org/package" directory
+    And there is package which requires:
+      | package     | version   |
+      | hello/world | *:dynamic |
+    And there is "src/main.cpp" file with contents:
+      """
+      #include "autoload.h"
+
+      int main() {
+        Hello::World::sayHello("John");
+        return 0;
+      }
+      """
+    When I run "deplink build --no-progress"
+    Then command should exit with status code 0
+    And I should have 1 of files:
+      | path                        |
+      | build/x86/hello-world.dll   |
+      | build/x86/libhello-world.so |

@@ -110,14 +110,17 @@ class GccCompiler extends BaseCompiler
 
     /**
      * @param string $outputFile File path without extension.
+     * @return string Path to the output file.
      */
     public function buildExecutable($outputFile)
     {
+        $outputPath = $this->system->toExePath($outputFile);
+
         $this->run('gcc',
             '-Wall', // all warnings messages
             $this->sourceFiles,
             self::ARCHITECTURE_OPTIONS[$this->architecture],
-            ['-o', $this->system->toExePath($outputFile)],
+            ['-o', $outputPath],
             $this->debugSymbols ? '-g' : [],
             $this->intermediateFiles ? '-save-temps=obj' : [],
             $this->getMacrosCommandOptions(),
@@ -125,6 +128,8 @@ class GccCompiler extends BaseCompiler
             $this->getIncludeDirsCommandOptions(),
             $this->getDefaultArgs()
         );
+
+        return $outputPath;
     }
 
     /**
@@ -194,10 +199,12 @@ class GccCompiler extends BaseCompiler
 
     /**
      * @param string $outputFile File path without extension.
+     * @return string Path to the output file.
      */
     public function buildStaticLibrary($outputFile)
     {
         $objPath = $outputFile . '.o';
+        $outputPath = $this->system->toStaticLibPath($outputFile);
 
         // Object file
         $this->buildObjectFile($objPath);
@@ -208,9 +215,11 @@ class GccCompiler extends BaseCompiler
             // "c" means to create a new archive,
             // and "s" means to write an index.
             'rcs',
-            $this->system->toStaticLibPath($outputFile),
+            $outputPath,
             $objPath
         );
+
+        return $outputPath;
     }
 
     /**
@@ -223,7 +232,7 @@ class GccCompiler extends BaseCompiler
         }
 
         $args = ['-Wall', '-O3'];
-        if ($this->system->isPlatform(System::LINUX)) {
+        if (!$this->system->isPlatform(System::WINDOWS)) {
             $args[] = '-fPIC';
         }
 
@@ -250,10 +259,12 @@ class GccCompiler extends BaseCompiler
 
     /**
      * @param string $outputFile File path without extension.
+     * @return string Path to the output file.
      */
     public function buildSharedLibrary($outputFile)
     {
         $objPath = $outputFile . '.o';
+        $outputPath = $this->system->toSharedLibPath($outputFile);
 
         // Object file
         $this->buildObjectFile($objPath);
@@ -262,9 +273,11 @@ class GccCompiler extends BaseCompiler
         $this->run('gcc',
             '-shared',
             self::ARCHITECTURE_OPTIONS[$this->architecture],
-            ['-o', $this->system->toSharedLibPath($outputFile)],
+            ['-o', $outputPath],
             $this->getDefaultArgs(),
             $objPath
         );
+
+        return $outputPath;
     }
 }

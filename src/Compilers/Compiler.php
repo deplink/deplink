@@ -88,16 +88,19 @@ interface Compiler
 
     /**
      * @param string $outputFile File path without extension.
+     * @return string Path to the output file.
      */
     public function buildExecutable($outputFile);
 
     /**
      * @param string $outputFile File path without extension.
+     * @return string Path to the output file.
      */
     public function buildStaticLibrary($outputFile);
 
     /**
      * @param string $outputFile File path without extension.
+     * @return string Path to the output file.
      */
     public function buildSharedLibrary($outputFile);
 

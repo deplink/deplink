@@ -45,6 +45,11 @@ class PackageBuildChain
     private $dependenciesDir;
 
     /**
+     * @var string[]
+     */
+    protected $artifactsReplicationDirs = [];
+
+    /**
      * @var CompilerFactory
      */
     private $compilerFactory;
@@ -96,6 +101,16 @@ class PackageBuildChain
     public function setDependenciesDir($dir)
     {
         $this->dependenciesDir = $dir;
+        return $this;
+    }
+
+    /**
+     * @param string|string[] $dirs
+     * @return $this
+     */
+    public function copyArtifactsToDir($dirs)
+    {
+        $this->artifactsReplicationDirs = (array)$dirs;
         return $this;
     }
 
@@ -208,31 +223,64 @@ class PackageBuildChain
         $outputFile = str_replace('/', '-', $this->package->getName());
         $outputPath = $this->fs->path('build', $arch, $outputFile);
 
+        $artifactPaths = [];
         if ($this->package->getType() === 'project') {
-            $this->makeExecutableArtifacts($outputPath);
+            $artifactPaths = $this->makeExecutableArtifacts($outputPath);
         } else {
-            $this->makeLibraryArtifacts($outputPath);
+            $artifactPaths = $this->makeLibraryArtifacts($outputPath);
         }
+
+        $this->replicateArtifact($artifactPaths, $arch);
     }
 
+    /**
+     * @param string $outputPath
+     * @return string Path to the executable file.
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Environment\Exceptions\UnknownException
+     */
     private function makeExecutableArtifacts($outputPath)
     {
         $this->fs->touchDir($this->fs->getDirName($outputPath));
-        $this->compiler->buildExecutable($outputPath);
+        return $this->compiler->buildExecutable($outputPath);
     }
 
+    /**
+     * @param string $outputPath
+     * @return string[] Path to the library file.
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Environment\Exceptions\UnknownException
+     */
     private function makeLibraryArtifacts($outputPath)
     {
+        $artifactPaths = [];
+
         // Static library
         if ($this->package->hasLinkingType('static')) {
             $this->fs->touchDir($this->fs->getDirName($outputPath));
-            $this->compiler->buildStaticLibrary($outputPath);
+            $artifactPaths[] = $this->compiler->buildStaticLibrary($outputPath);
         }
 
         // Shared library
         if ($this->package->hasLinkingType('dynamic')) {
             $this->fs->touchDir($this->fs->getDirName($outputPath));
-            $this->compiler->buildSharedLibrary($outputPath);
+            $artifactPaths[] = $this->compiler->buildSharedLibrary($outputPath);
+        }
+
+        return $artifactPaths;
+    }
+
+    private function replicateArtifact($srcPaths, $arch)
+    {
+        $srcPaths = (array)$srcPaths;
+        foreach ($srcPaths as $srcPath) {
+            $srcName = $this->fs->getFileName($srcPath);
+            foreach ($this->artifactsReplicationDirs as $dstDir) {
+                $dstDir = str_replace('{arch}', $arch, $dstDir);
+                $dstPath = $this->fs->path($dstDir, $srcName);
+
+                $this->fs->copyFile($srcPath, $dstPath);
+            }
         }
     }
 }

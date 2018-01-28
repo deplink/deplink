@@ -106,12 +106,14 @@ class BuildCommand extends BaseCommand
         $this->output->writeln("Dependencies: <info>$builds builds</info>, <info>$upToDate up-to-date</info>");
 
         // Build dependencies
+        $artifactsCopyAbsPath = $this->fs->path($this->fs->getWorkingDir(), 'build/{arch}');
         $dependenciesAbsPath = $this->fs->path($this->fs->getWorkingDir(), 'deplinks');
         foreach ($buildQueue as $packageName) {
             $this->output->writeln("  - Building <info>$packageName</info>");
 
             $builder = $this->factory->makeBuildChain("deplinks/$packageName");
             $builder->setDependenciesDir($dependenciesAbsPath)
+                ->copyArtifactsToDir($artifactsCopyAbsPath)
                 ->debugMode(!$this->input->getOption('no-dev'))
                 ->build();
         }
