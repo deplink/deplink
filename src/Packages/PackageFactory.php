@@ -187,7 +187,7 @@ class PackageFactory
         $package->setLinkingTypes($this->get($json, 'linking', ['static', 'dynamic']));
         $package->setArchitectures($this->get($json, 'arch', ['x86', 'x64']));
 
-        $config = $this->get($json, 'config', []);
+        $config = $this->get($json, 'config', null);
         $package->setConfig(ConstraintObject::hydrate($config));
 
         $compilers = $this->get($json, 'compilers', []);
