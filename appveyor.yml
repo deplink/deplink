@@ -11,6 +11,7 @@ platform:
 init:
   - cinst php --version 7.0.1 --allow-empty-checksums
   - cinst composer --version 4.7.0 --allow-empty-checksums
+  - refreshenv
 
   - ps: mkdir "c:\tdm64"
   - ps: Invoke-WebRequest "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-core.zip" -OutFile "c:\gcc-5.1.0-tdm64-1-core.zip"
