@@ -10,8 +10,19 @@ platform:
 
 init:
   - cinst php --version 7.0.1 --allow-empty-checksums
-  - cinst mingw --version 5.3.0 --allow-empty-checksums
   - cinst composer --version 4.7.0 --allow-empty-checksums
+
+  - ps: mkdir "c:\tdm64"
+  - ps: Invoke-WebRequest "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-core.zip" -OutFile "c:\gcc-5.1.0-tdm64-1-core.zip"
+  - ps: Expand-Archive "c:\gcc-5.1.0-tdm64-1-core.zip" -DestinationPath "c:\tdm64" -Force
+  - ps: Invoke-WebRequest "https://kent.dl.sourceforge.net/project/tdm-gcc/GNU%20binutils/binutils-2.25-tdm64-1.zip" -OutFile "c:\binutils-2.25-tdm64-1.zip"
+  - ps: Expand-Archive "c:\binutils-2.25-tdm64-1.zip" -DestinationPath "c:\tdm64" -Force
+  - ps: Invoke-WebRequest "https://kent.dl.sourceforge.net/project/tdm-gcc/MinGW-w64%20runtime/GCC%205%20series/mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -OutFile "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip"
+  - ps: Expand-Archive "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -DestinationPath "c:\tdm64" -Force
+  - ps: Invoke-WebRequest "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-c%2B%2B.zip" -OutFile "c:\gcc-5.1.0-tdm64-1-c%2B%2B.zip"
+  - ps: Expand-Archive "c:\gcc-5.1.0-tdm64-1-c%2B%2B.zip" -DestinationPath "c:\tdm64" -Force
+
+  - setx path "%path%;c:\tdm64"
   - refreshenv
 
 install:
