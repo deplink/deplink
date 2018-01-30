@@ -26,7 +26,7 @@ init:
 
   # Add PHP, Composer and TDM to the PATH variable
   # (globally accessible, especially gcc for deplink).
-  - set PATH=%PATH%;c:\tdm64\bin;C:\Program Files (x86)\ComposerSetup;C:\tools\php
+  - set PATH=%PATH%;c:\tdm64\bin;C:\ProgramData\ComposerSetup\bin;C:\tools\php
   - echo %PATH%
 
   # Print versions for easier diagnostics.
