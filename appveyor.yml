@@ -11,22 +11,27 @@ platform:
 init:
   - cinst php --version 7.0.1 --allow-empty-checksums
   - cinst composer --version 4.7.0 --allow-empty-checksums
-  - refreshenv
-  - php --version
 
+  # Install TDM64 which supports both -m32 and -m64 gcc flag
+  # (flags used to compiler application for x86 and x64 arch).
   - mkdir "c:\tdm64"
-  - curl -fsSL -o "c:\gcc-5.1.0-tdm64-1-core.zip" -m 180 "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-core.zip"
-  - 7z e -r -y "c:\gcc-5.1.0-tdm64-1-core.zip" -o"c:\tdm64"
-  - curl -fsSL -o "c:\binutils-2.25-tdm64-1.zip" -m 180 "https://kent.dl.sourceforge.net/project/tdm-gcc/GNU%20binutils/binutils-2.25-tdm64-1.zip"
-  - 7z e -r -y "c:\binutils-2.25-tdm64-1.zip" -o"c:\tdm64"
-  - curl -fsSL -o "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -m 180 "https://kent.dl.sourceforge.net/project/tdm-gcc/MinGW-w64%20runtime/GCC%205%20series/mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip"
-  - 7z e -r -y "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -o"c:\tdm64"
-  - curl -fsSL -o "c:\gcc-5.1.0-tdm64-1-c%2B%2B.zip" -m 180 "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-c%2B%2B.zip"
-  - 7z e -r -y "c:\gcc-5.1.0-tdm64-1-c%2B%2B.zip" -o"c:\tdm64"
+  - appveyor DownloadFile "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC 5 series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-core.zip" -FileName "c:\gcc-5.1.0-tdm64-1-core.zip"
+  - 7z x -y "c:\gcc-5.1.0-tdm64-1-core.zip" -o"c:\tdm64"
+  - appveyor DownloadFile "https://kent.dl.sourceforge.net/project/tdm-gcc/GNU binutils/binutils-2.25-tdm64-1.zip" -FileName "c:\binutils-2.25-tdm64-1.zip"
+  - 7z x -y "c:\binutils-2.25-tdm64-1.zip" -o"c:\tdm64"
+  - appveyor DownloadFile "https://kent.dl.sourceforge.net/project/tdm-gcc/MinGW-w64 runtime/GCC 5 series/mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -FileName "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip"
+  - 7z x -y "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -o"c:\tdm64"
+  - appveyor DownloadFile "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC 5 series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-c++.zip" -FileName "c:\gcc-5.1.0-tdm64-1-c++.zip"
+  - 7z x -y "c:\gcc-5.1.0-tdm64-1-c++.zip" -o"c:\tdm64"
 
-  - setx PATH "%PATH%;c:\tdm64"
-  - refreshenv
+  # Add PHP, Composer and TDM to the PATH variable
+  # (globally accessible, especially gcc for deplink).
+  - set PATH=%PATH%;c:\tdm64\bin;C:\Program Files (x86)\ComposerSetup;C:\tools\php
   - echo %PATH%
+
+  # Print versions for easier diagnostics.
+  - gcc --version
+  - g++ --version
   - php --version
 
 install:
