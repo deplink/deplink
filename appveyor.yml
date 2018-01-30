@@ -16,13 +16,13 @@ init:
 
   - mkdir "c:\tdm64"
   - curl -L "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-core.zip" -o "c:\gcc-5.1.0-tdm64-1-core.zip"
-  - 7z e -r -y "c:\gcc-5.1.0-tdm64-1-core.zip" -o "c:\tdm64"
+  - 7z e -r -y "c:\gcc-5.1.0-tdm64-1-core.zip" -o"c:\tdm64"
   - curl -L "https://kent.dl.sourceforge.net/project/tdm-gcc/GNU%20binutils/binutils-2.25-tdm64-1.zip" -o "c:\binutils-2.25-tdm64-1.zip"
-  - 7z e -r -y "c:\binutils-2.25-tdm64-1.zip" -o "c:\tdm64"
+  - 7z e -r -y "c:\binutils-2.25-tdm64-1.zip" -o"c:\tdm64"
   - curl -L "https://kent.dl.sourceforge.net/project/tdm-gcc/MinGW-w64%20runtime/GCC%205%20series/mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -o "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip"
-  - 7z e -r -y "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -o "c:\tdm64"
+  - 7z e -r -y "c:\mingw64runtime-v4-git20150618-gcc5-tdm64-1.zip" -o"c:\tdm64"
   - curl -L "https://kent.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-c%2B%2B.zip" -o "c:\gcc-5.1.0-tdm64-1-c%2B%2B.zip"
-  - 7z e -r -y "c:\gcc-5.1.0-tdm64-1-c%2B%2B.zip" -o "c:\tdm64"
+  - 7z e -r -y "c:\gcc-5.1.0-tdm64-1-c%2B%2B.zip" -o"c:\tdm64"
 
   - setx PATH "%PATH%;c:\tdm64"
   - refreshenv
