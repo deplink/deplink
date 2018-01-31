@@ -29,6 +29,10 @@ init:
   - set PATH=%PATH%;c:\tdm64\bin;C:\ProgramData\ComposerSetup\bin;C:\tools\php
   - echo %PATH%
 
+  # Enable creating phar archives in PHP (required by test_script).
+  # Script replaces the ";phar.readonly = On" to "phar.readonly = Off" in php.ini.
+  - ps: (Get-Content 'C:\tools\php\php.ini').replace(';phar.readonly = On', 'phar.readonly = Off') | Set-Content 'C:\tools\php\php.ini'
+
   # Print versions for easier diagnostics.
   - gcc --version
   - g++ --version
