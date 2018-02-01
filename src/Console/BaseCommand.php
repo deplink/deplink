@@ -3,6 +3,7 @@
 namespace Deplink\Console;
 
 use Deplink\Environment\Filesystem;
+use Deplink\Packages\LocalPackage;
 use Deplink\Packages\PackageFactory;
 use DI\Container;
 use Symfony\Component\Console\Command\Command;
@@ -29,7 +30,12 @@ abstract class BaseCommand extends Command
     /**
      * @var Container
      */
-    private $di;
+    protected $di;
+
+    /**
+     * @var LocalPackage|null
+     */
+    protected $package;
 
     /**
      * @param Filesystem $fs
@@ -105,7 +111,7 @@ abstract class BaseCommand extends Command
         $packageFactory = $this->di->get(PackageFactory::class);
 
         try {
-            $packageFactory->makeFromDir('.');
+            $this->package = $packageFactory->makeFromDir('.');
         } catch (\Exception $e) {
             throw new \Exception("Invalid json format of the deplink.json file", 0, $e);
         }

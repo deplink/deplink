@@ -27,7 +27,7 @@ return [
         \Deplink\Console\Commands\BuildCommand::class,
         //\Deplink\Console\Commands\RebuildCommand::class,
         //\Deplink\Console\Commands\CleanCommand::class,
-        //\Deplink\Console\Commands\RunCommand::class,
+        \Deplink\Console\Commands\RunCommand::class,
         //\Deplink\Console\Commands\ScriptCommand::class,
     ],
 ];

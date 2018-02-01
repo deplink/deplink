@@ -33,11 +33,6 @@ class InstallCommand extends BaseCommand
     protected $installed;
 
     /**
-     * @var Container
-     */
-    private $di;
-
-    /**
      * @var LockFactory
      */
     private $lockFactory;
@@ -52,7 +47,6 @@ class InstallCommand extends BaseCommand
      */
     public function __construct(Filesystem $fs, LockFactory $lockFactory, Container $di)
     {
-        $this->di = $di;
         $this->lockFactory = $lockFactory;
 
         parent::__construct($fs, $di);
