@@ -81,7 +81,7 @@ class Installer
      * Download missing and outdated packages.
      *
      * @param InstallingProgress|null $progress
-     * @return DependenciesCollection
+     * @return DependenciesCollection Collection containing newly installed dependencies.
      * @throws Excpetions\DependencyNotExistsException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException

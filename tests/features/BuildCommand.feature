@@ -123,3 +123,31 @@ Feature: Build command
       | path                        |
       | build/x86/hello-world.dll   |
       | build/x86/libhello-world.so |
+
+  Scenario: Rebuild only root project on second call
+    Given I am in "org/package" directory
+    And there is package which requires:
+      | package     | version |
+      | hello/world | *       |
+    And there is "src/main.cpp" file with contents:
+      """
+      #include "autoload.h"
+
+      int main() {
+        Hello::World::sayHello("John");
+        return 0;
+      }
+      """
+    When I run "deplink build --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 1 builds, 0 up-to-date
+        - Building hello/world
+      Building project... OK
+      """
+    When I run "deplink build --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 0 builds, 1 up-to-date
+      Building project... OK
+      """

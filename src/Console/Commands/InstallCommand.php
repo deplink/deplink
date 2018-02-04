@@ -33,6 +33,11 @@ class InstallCommand extends BaseCommand
     protected $installed;
 
     /**
+     * @var InstalledPackagesManager;
+     */
+    protected $manager;
+
+    /**
      * @var LockFactory
      */
     private $lockFactory;
@@ -93,18 +98,19 @@ class InstallCommand extends BaseCommand
 
     private function retrieveInstalledDependencies()
     {
+        // Must be called at the beginning because
+        // other steps may use the retrieved manager.
+        $this->manager = $this->di->get(InstalledPackagesManager::class);
+        $this->manager->snapshot();
+
         $this->output->write('Retrieving installed dependencies... ');
         if (!$this->fs->existsDir('deplinks')) {
             $this->output->writeln('<comment>Skipped</comment>');
             return;
         }
 
-        /** @var InstalledPackagesManager $manager */
-        $manager = $this->di->get(InstalledPackagesManager::class);
-        $manager->snapshot();
-
         // Cleanup directory with installed dependencies
-        foreach ($manager->getAmbiguous() as $packageName) {
+        foreach ($this->manager->getAmbiguous() as $packageName) {
             $path = $this->fs->path('deplinks', $packageName);
             $this->fs->removeDir($path);
         }
@@ -128,9 +134,11 @@ class InstallCommand extends BaseCommand
         $installer = $this->di->get(Installer::class);
         $trackProgress = !$this->input->hasOption('no-progress');
 
-        $this->installed = $installer->install(
+        $newlyInstalled = $installer->install(
             new InstallationProgressFormater($this->output, $trackProgress)
         );
+
+        $this->installed = $newlyInstalled->merge($this->manager->getInstalled());
     }
 
     private function writeLockFile()

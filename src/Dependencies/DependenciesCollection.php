@@ -81,4 +81,20 @@ class DependenciesCollection
 
         return $this->dependencies[$name];
     }
+
+    /**
+     * Add items to the collection from the specified collection.
+     *
+     * @param DependenciesCollection $collection
+     * @return $this
+     * @throws DependencyNotExistsException
+     */
+    public function merge(DependenciesCollection $collection)
+    {
+        foreach ($collection->getPackagesNames() as $name) {
+            $this->dependencies[$name] = $collection->get($name);
+        }
+
+        return $this;
+    }
 }
