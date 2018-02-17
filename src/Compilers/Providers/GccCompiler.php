@@ -79,13 +79,18 @@ class GccCompiler extends BaseCompiler
         // This is free software; see the source for copying conditions.  There is NO
         // warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
         // ---------------------------------------------------------------------------
+        // gcc (Ubuntu 5.4.0-6ubuntu1~ 16.04.4) 5.4.0 20160609
+        // Copyright (C) 2015 Free Software Foundation, Inc.
+        // This is free software; see the source for copying conditions.  There is NO
+        // warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+        // ---------------------------------------------------------------------------
         exec('gcc --version', $output, $exitCode);
         if ($exitCode != 0) {
             throw new CompilerNotFoundException("The gcc compiler couldn't be found. Check if the gcc is added to your path environment variables.");
         }
 
         $matches = [];
-        if (preg_match('/[0-9]+\.[0-9]+\.[0-9]+$/', $output[0], $matches) != 1) {
+        if (preg_match('/[0-9]+\.[0-9]+\.[0-9]+/', $output[0], $matches) != 1) {
             throw new UnknownCompilerVersionException("The gcc compiler was found, but failed at establishing the compiler version. Please open the issue and attach result of the 'gcc --version', thanks!");
         }
 
