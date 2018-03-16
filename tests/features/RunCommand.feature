@@ -19,3 +19,29 @@ Feature: Run command
       Hello, World!
       """
     And command should exit with status code 230
+
+  Scenario: One dependency not previously installed
+    Given I am in "org/package" directory
+    And there is package which requires:
+      | package     | version |
+      | hello/world | *       |
+    And there is "src/main.cpp" file with contents:
+      """
+      #include "autoload.h"
+
+      int main(int argc, const char** argv) {
+        Hello::World::sayHello(argv[1]);
+        Hello::World::sayHello(argv[2]);
+        return 0;
+      }
+      """
+    When I run "deplink build --no-progress"
+    And I run "deplink run -- Wojtek World"
+    Then the console output should contains:
+      """
+      Hello, Wojtek!
+      Hello, World!
+      """
+
+    # TODO: Setting the LD_LIBRARY_PATH on Linux (http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html)
+    # TODO: Default working directory in the running application

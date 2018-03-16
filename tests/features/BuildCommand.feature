@@ -80,6 +80,9 @@ Feature: Build command
       {
         "name": "test/package",
         "type": "project",
+        "compilers": {
+          "gcc": "*"
+        },
         "config": {
           "compilers": {
             "gcc:x64": "-save-temps=obj"

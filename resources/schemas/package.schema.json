@@ -29,7 +29,7 @@
             "description": "Path to the directory containing source files (.c and .cpp). The default is 'src'."
         },
 
-        "compiler": {
+        "compilers": {
             "type": "object",
             "description": "List of supported compilers. By default one of the locally supported compilers is used.",
             "additionalProperties": {

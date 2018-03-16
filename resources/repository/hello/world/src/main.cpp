@@ -3,5 +3,5 @@
 
 void Hello::World::sayHello(const char* name)
 {
-    printf("Hello, %s!", name);
+    printf("Hello, %s!\r\n", name);
 }

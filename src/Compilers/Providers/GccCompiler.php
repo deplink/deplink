@@ -15,6 +15,11 @@ use Deplink\Environment\System;
 class GccCompiler extends BaseCompiler
 {
     /**
+     * @var string
+     */
+    protected $cmd = "gcc";
+
+    /**
      * Console options required by the specified architectures.
      *
      * @var array
@@ -84,14 +89,14 @@ class GccCompiler extends BaseCompiler
         // This is free software; see the source for copying conditions.  There is NO
         // warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
         // ---------------------------------------------------------------------------
-        exec('gcc --version', $output, $exitCode);
+        exec("{$this->cmd} --version", $output, $exitCode);
         if ($exitCode != 0) {
-            throw new CompilerNotFoundException("The gcc compiler couldn't be found. Check if the gcc is added to your path environment variables.");
+            throw new CompilerNotFoundException("The {$this->cmd} compiler couldn't be found. Check if the {$this->cmd} is added to your path environment variables.");
         }
 
         $matches = [];
         if (preg_match('/[0-9]+\.[0-9]+\.[0-9]+/', $output[0], $matches) != 1) {
-            throw new UnknownCompilerVersionException("The gcc compiler was found, but failed at establishing the compiler version. Please open the issue and attach result of the 'gcc --version', thanks!");
+            throw new UnknownCompilerVersionException("The {$this->cmd} compiler was found, but failed at establishing the compiler version. Please open the issue and attach result of the '{$this->cmd} --version', thanks!");
         }
 
         return $matches[0];
@@ -121,7 +126,7 @@ class GccCompiler extends BaseCompiler
     {
         $outputPath = $this->system->toExePath($outputFile);
 
-        $this->run('gcc',
+        $this->run($this->cmd,
             '-Wall', // all warnings messages
             $this->sourceFiles,
             self::ARCHITECTURE_OPTIONS[$this->architecture],
@@ -249,7 +254,7 @@ class GccCompiler extends BaseCompiler
      */
     private function buildObjectFile($objOutput)
     {
-        $this->run('gcc',
+        $this->run($this->cmd,
             '-c', // compile and assemble, but do not link
             $this->sourceFiles,
             ['-o', $objOutput],
@@ -275,7 +280,7 @@ class GccCompiler extends BaseCompiler
         $this->buildObjectFile($objPath);
 
         // Library file
-        $this->run('gcc',
+        $this->run($this->cmd,
             '-shared',
             self::ARCHITECTURE_OPTIONS[$this->architecture],
             ['-o', $outputPath],

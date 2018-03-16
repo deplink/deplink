@@ -8,6 +8,7 @@ use Deplink\Locks\LockFile;
 use Deplink\Packages\LocalPackage;
 use Deplink\Packages\PackageFactory;
 use Deplink\Packages\ValueObjects\DependencyObject;
+use Deplink\Repositories\Exceptions\PackageNotFoundException;
 use Deplink\Repositories\RepositoriesCollection;
 use Deplink\Repositories\RepositoryFactory;
 use Deplink\Resolvers\Exceptions\ConflictsBetweenDependenciesException;
@@ -133,6 +134,7 @@ class DependenciesTreeResolver
      * @throws \Deplink\Validators\Exceptions\ValidationException
      * @throws \InvalidArgumentException
      * @throws \Seld\JsonLint\ParsingException
+     * @throws DependenciesLoopException
      */
     public function snapshot($includeDev = true)
     {
@@ -147,7 +149,6 @@ class DependenciesTreeResolver
 
         // Get all dependencies (including dev) from the project deplink.json file,
         // this dependencies will be used to make an initial state to check tree correctness.
-
         /** @var DependencyObject[] $dependencies */
         $dependencies = array_merge(
             $this->project->getDependencies(),
@@ -175,7 +176,8 @@ class DependenciesTreeResolver
      * @param DependenciesTreeState[] $states
      * @return DependenciesTreeState[]
      * @throws ConflictsBetweenDependenciesException
-     * @throws \Deplink\Repositories\Exceptions\PackageNotFoundException
+     * @throws PackageNotFoundException
+     * @throws DependenciesLoopException
      */
     private function resolve($dependencies, $states)
     {
@@ -194,13 +196,12 @@ class DependenciesTreeResolver
     }
 
     /**
-     * TODO: Dependencies loop detection
-     *
      * @param DependencyObject $dependency
      * @param DependenciesTreeState[] $states
      * @param string[] $parents
      * @return DependenciesTreeState[]
-     * @throws \Deplink\Repositories\Exceptions\PackageNotFoundException
+     * @throws PackageNotFoundException
+     * @throws DependenciesLoopException
      */
     private function resolveUnit(DependencyObject $dependency, $states, array $parents = [])
     {
@@ -233,6 +234,7 @@ class DependenciesTreeResolver
                 $tmpState->setPackage($dependency->getPackageName(), $version, $remote);
 
                 // Add packages constraints to the state for the given version of the dependency.
+                // TODO: Support multiple constraints: version, platform, linking type...
                 $package = $remote->getDownloader()->requestDetails($version);
                 foreach ($package->getDependencies() as $dependencyName => $constraint) {
                     $tmpState->addConstraint($dependencyName, $constraint);

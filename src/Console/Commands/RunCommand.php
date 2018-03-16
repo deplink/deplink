@@ -44,7 +44,7 @@ class RunCommand extends BaseCommand
             ->setDescription('Run project executable file')
             ->addArgument('args', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Arguments passed to the executable file')
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Run binary compiled for specified architecture')
-            ->addOption('timeout', 't', InputOption::VALUE_REQUIRED, 'Program execution timeout (disabled by default)', null)
+            ->addOption('timeout', 't', InputOption::VALUE_REQUIRED, 'Program execution timeout [s] (disabled by default)', null)
             ->addOption('working-dir', 'd', InputOption::VALUE_REQUIRED,
                 'Use the given directory as working directory', '.');
     }
@@ -126,8 +126,16 @@ class RunCommand extends BaseCommand
         $args = implode(' ', $args);
         $timeout = $this->input->getOption('timeout');
 
+        // On Linux and Mac define the LD_LIBRARY_PATH variable
+        // to point the build directories which contains libraries.
+        $prefix = '';
+        if (!$this->system->isPlatform(System::WINDOWS)) {
+            $libDir = $this->fs->getDirName($path);
+            $prefix = "LD_LIBRARY_PATH=\"\${LD_LIBRARY_PATH}:$libDir\"";
+        }
+
         $process = new Process(
-            "\"$path\" $args",
+            "$prefix \"$path\" $args",
             $this->fs->getWorkingDir(),
             null, null, $timeout
         );
