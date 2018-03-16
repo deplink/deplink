@@ -30,7 +30,7 @@ init:
 
   # Enable creating phar archives in PHP (required by test_script).
   # Script replaces the ";phar.readonly = On" to "phar.readonly = Off" in php.ini.
-  - ps: (Get-Content 'C:\tools\php\php72.ini').replace(';phar.readonly = On', 'phar.readonly = Off') | Set-Content 'C:\tools\php\php72.ini'
+  - ps: (Get-Content 'C:\tools\php72\php.ini').replace(';phar.readonly = On', 'phar.readonly = Off') | Set-Content 'C:\tools\php72\php.ini'
 
   # Print versions for easier diagnostics.
   - gcc --version
