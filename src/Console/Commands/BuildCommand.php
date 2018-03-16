@@ -8,6 +8,7 @@ use Deplink\Dependencies\HierarchyFinder;
 use Deplink\Dependencies\InstalledPackagesManager;
 use Deplink\Dependencies\ValueObjects\DependencyObject;
 use Deplink\Environment\Filesystem;
+use Deplink\Environment\System;
 use DI\Container;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
@@ -30,6 +31,11 @@ class BuildCommand extends BaseCommand
     private $packagesManager;
 
     /**
+     * @var System
+     */
+    private $system;
+
+    /**
      * InitCommand constructor.
      *
      * @param Filesystem $fs
@@ -44,11 +50,13 @@ class BuildCommand extends BaseCommand
         Container $di,
         CompilerFactory $factory,
         HierarchyFinder $hierarchyFinder,
-        InstalledPackagesManager $packagesManager
+        InstalledPackagesManager $packagesManager,
+        System $system
     ) {
         $this->factory = $factory;
         $this->hierarchyFinder = $hierarchyFinder;
         $this->packagesManager = $packagesManager;
+        $this->system = $system;
 
         parent::__construct($fs, $di);
     }
@@ -77,6 +85,7 @@ class BuildCommand extends BaseCommand
     {
         $this->installDependencies();
         $this->buildDependencies();
+        $this->copyLibrariesToBuildDir();
 
         $this->output->write('Building project... ');
         $this->buildProject();
@@ -106,16 +115,41 @@ class BuildCommand extends BaseCommand
         $this->output->writeln("Dependencies: <info>$builds builds</info>, <info>$upToDate up-to-date</info>");
 
         // Build dependencies
-        $artifactsCopyAbsPath = $this->fs->path($this->fs->getWorkingDir(), 'build/{arch}');
         $dependenciesAbsPath = $this->fs->path($this->fs->getWorkingDir(), 'deplinks');
         foreach ($buildQueue as $packageName) {
             $this->output->writeln("  - Building <info>$packageName</info>");
 
             $builder = $this->factory->makeBuildChain("deplinks/$packageName");
             $builder->setDependenciesDir($dependenciesAbsPath)
-                ->copyArtifactsToDir($artifactsCopyAbsPath)
                 ->debugMode(!$this->input->getOption('no-dev'))
                 ->build();
+        }
+    }
+
+    private function copyLibrariesToBuildDir()
+    {
+        $packages = $this->packagesManager->getInstalled();
+        foreach ($packages->getPackagesNames() as $name) {
+            $package = $packages->get($name)->getLocal();
+            foreach ($package->getArchitectures() as $arch) {
+                $libFile = str_replace('/', '-', $package->getName());
+                $libPath = $this->fs->path('deplinks', $name, 'build', $arch, $libFile);
+                $destPath = $this->fs->path('build', $arch, $libFile);
+
+                if (in_array('static', $package->getLinkingTypes())) {
+                    $this->fs->copyFile(
+                        $this->system->toStaticLibPath($libPath),
+                        $this->system->toStaticLibPath($destPath)
+                    );
+                }
+
+                if (in_array('dynamic', $package->getLinkingTypes())) {
+                    $this->fs->copyFile(
+                        $this->system->toSharedLibPath($libPath),
+                        $this->system->toSharedLibPath($destPath)
+                    );
+                }
+            }
         }
     }
 
