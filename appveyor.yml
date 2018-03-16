@@ -8,8 +8,8 @@ platform:
   - x64
 
 init:
-  - cinst php --version 7.0.1 --allow-empty-checksums
-  - cinst composer --version 4.7.0 --allow-empty-checksums
+  - cinst php
+  - cinst composer
 
   # Install TDM64 which supports both -m32 and -m64 gcc flag
   # (flags used to compiler application for x86 and x64 arch).
