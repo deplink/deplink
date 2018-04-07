@@ -84,6 +84,7 @@ class ConstraintObject
      *
      * @param object|array $object
      * @return ConstraintObject
+     * @throws \Deplink\Constraints\Exceptions\IncorrectJsonValueException
      */
     public static function hydrate($object)
     {

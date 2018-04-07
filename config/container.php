@@ -7,6 +7,8 @@
  */
 return [
 
-    // ...
+    \GuzzleHttp\ClientInterface::class => function () {
+        return new \GuzzleHttp\Client();
+    },
 
 ];

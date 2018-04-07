@@ -213,6 +213,24 @@ Feature: Install command
       """
     And command should exit with status code 0
 
+  Scenario: Install with --dev and --no-dev option
+    Given there is empty package
+    When I run "deplink install --dev --no-dev"
+    Then the console output should contains:
+      """
+      Cannot use --dev option along with --no-dev option.
+      """
+
+  @remote
+  Scenario: Install dependency from official remote repository
+    Given there is empty package
+    When I run "deplink install deplink/sample --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 1 installs, 0 updates, 0 removals
+        - Installing deplink/sample (v1.0.0)
+      """
+
   # TODO: Install locked version of the dependencies (require remote repository)
   # TODO: cleanup deplinks directory if installed.lock file is missing
   # TODO: delete mismatches between installed.lock and directory structure

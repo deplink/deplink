@@ -43,5 +43,25 @@ Feature: Run command
       Hello, World!
       """
 
+  @remote
+  Scenario: Dependency from official remote repository
+    Given there is empty package
+    And there is "src/main.cpp" file with contents:
+      """
+      #include "autoload.h"
+
+      int main(int argc, const char** argv) {
+        sayHello(argv[1]);
+        return 0;
+      }
+      """
+    When I run "deplink install deplink/sample --no-progress"
+    And I run "deplink build"
+    And I run "deplink run -- Wojtek"
+    Then the console output should contains:
+      """
+      "Hello, Wojtek" said Deplink, beaming at him.
+      """
+
     # TODO: Setting the LD_LIBRARY_PATH on Linux (http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html)
     # TODO: Default working directory in the running application

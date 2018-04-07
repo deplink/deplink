@@ -173,15 +173,15 @@ class GccCompiler extends BaseCompiler
             $this->linkDynamic
         );
 
-        $results = [];
+        // Search libraries in build directory.
+        //
+        // Searching for libraries in dependency build directory
+        // cannot be performed because compiler can find and use
+        // library for different OS (compiler search lib by name).
+        $results = ['-L', "build/{$this->architecture}"];
+
         foreach ($libraries as $libPath) {
             $libName = $this->fs->getFileName($libPath);
-            $libDir = $this->fs->getDirName($libPath);
-
-            if (!empty($libDir)) {
-                $results[] = '-L';
-                $results[] = escapeshellarg($libDir);
-            }
 
             $results[] = '-l';
             $results[] = escapeshellarg($libName);

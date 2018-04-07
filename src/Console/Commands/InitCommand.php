@@ -96,10 +96,17 @@ class InitCommand extends BaseCommand
             throw new \Exception("Cannot initialize package in non-empty directory");
         }
 
+        // Create empty package and use setters
+        // to check values against setter's validators.
         $package = $this->factory->makeEmpty()
             ->setName($packageName)
             ->setType('project');
 
-        $this->fs->writeFile('deplink.json', $package->getJson());
+        $json = json_encode([
+            'name' => $package->getName(),
+            'type' => $package->getType(),
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        $this->fs->writeFile('deplink.json', $json);
     }
 }

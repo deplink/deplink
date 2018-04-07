@@ -50,6 +50,16 @@ class LocalDownloader implements Downloader
     }
 
     /**
+     * Source from which package can be download.
+     *
+     * @return string
+     */
+    public function from()
+    {
+        return $this->srcDir;
+    }
+
+    /**
      * Set directory in which files will be stored
      * (directory will be created if not exists).
      *
@@ -121,16 +131,6 @@ class LocalDownloader implements Downloader
         }
 
         return $this->destDir;
-    }
-
-    /**
-     * Source from which package can be download.
-     *
-     * @return string
-     */
-    public function from()
-    {
-        return $this->srcDir;
     }
 
     /**

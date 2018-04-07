@@ -10,7 +10,7 @@ use Deplink\Packages\ValueObjects\RepositoryObject;
 /**
  * Mutable package json file.
  */
-class LocalPackage implements \JsonSerializable
+class LocalPackage
 {
     const AVAILABLE_TYPES = [
         'project', 'library',
@@ -393,38 +393,6 @@ class LocalPackage implements \JsonSerializable
     {
         $this->config = $config;
         return $this;
-    }
-
-    /**
-     * Specify data which should be serialized to JSON.
-     *
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     *  which is a value of any type other than a resource.
-     */
-    public function jsonSerialize()
-    {
-        $result = [];
-        $attributes = ['name', 'type', 'version'];
-
-        foreach ($attributes as $attribute) {
-            $value = $this->{$attribute};
-            if (!empty($value)) {
-                $result[$attribute] = $value;
-            }
-        }
-
-        return new \ArrayObject($result);
-    }
-
-    /**
-     * Get human-readable json.
-     *
-     * @return string
-     */
-    public function getJson()
-    {
-        return json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**

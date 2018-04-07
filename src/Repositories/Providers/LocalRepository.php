@@ -109,7 +109,7 @@ class LocalRepository implements Repository
         }
 
         $path = $this->pathFor($package);
-        $versionFinder = $this->versionFinderFactory->makeLocalPackageVersionFinder($path);
+        $versionFinder = $this->versionFinderFactory->makeLocal($path);
         $downloader = $this->downloaderFactory->makeLocal($path);
 
         return $this->packageFactory->makeRemote(

@@ -95,6 +95,7 @@ class Installer
      * @throws \Deplink\Validators\Exceptions\ValidationException
      * @throws \InvalidArgumentException
      * @throws \Seld\JsonLint\ParsingException
+     * @throws \Deplink\Resolvers\Exceptions\DependenciesLoopException
      */
     public function install(InstallingProgress $progress = null)
     {

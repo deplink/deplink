@@ -62,11 +62,13 @@ class InstallCommand extends BaseCommand
         $this->setName('install')
             ->setDescription('Install dependencies')
             ->setHelp('Install dependencies listed in the deplink.lock or in the deplink.json if lock file is missing or outdated.')
-            ->addArgument('package', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Name of the packages to install')
+            ->addArgument('package', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Names of the packages to add before installation')
             ->addOption('no-progress', null, InputOption::VALUE_NONE,
                 'Outputs only steps without showing dynamic progress')
             ->addOption('no-dev', null, InputOption::VALUE_NONE,
                 'Skip installation packages from the "dev-dependencies" section')
+            ->addOption('dev', null, InputOption::VALUE_NONE,
+                'Add optional packages to "dev-dependencies" section')
             ->addOption('working-dir', 'd', InputOption::VALUE_REQUIRED,
                 'Use the given directory as working directory', '.');
     }
@@ -83,6 +85,7 @@ class InstallCommand extends BaseCommand
     protected function exec()
     {
         $this->checkProject();
+        $this->checkArguments();
         $this->updateProjectPackage();
         $this->retrieveInstalledDependencies();
         $this->resolveDependenciesTree();
@@ -91,9 +94,37 @@ class InstallCommand extends BaseCommand
         $this->writeAutoloadHeader();
     }
 
+    private function checkArguments()
+    {
+        if ($this->input->getOption('dev')
+            && $this->input->getOption('no-dev')) {
+            throw new \Exception("Cannot use --dev option along with --no-dev option.");
+        }
+    }
+
     private function updateProjectPackage()
     {
-        // TODO: Add package to deplink.json (potential issues: already exists, deplink.json not found)
+        $packages = $this->input->getArgument('package');
+        if (empty($packages)) {
+            return;
+        }
+
+        $file = json_decode($this->fs->readFile('deplink.json'));
+        $section = $this->input->getOption('dev') ? 'dev-dependencies' : 'dependencies';
+
+        if (!isset($file->{$section})) {
+            $file->{$section} = (object)[];
+        }
+
+        // TODO: Error if dependency already defined (in any of sections; message about update command??)
+
+        foreach ($packages as $package) {
+            // FIXME: Read constraint from command or use by default "^<latest-version>"
+            $file->{$section}->{$package} = '*';
+        }
+
+        $json = json_encode($file, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $this->fs->writeFile('deplink.json', $json);
     }
 
     private function retrieveInstalledDependencies()

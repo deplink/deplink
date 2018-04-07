@@ -7,13 +7,17 @@ return [
      */
     'providers' => [
         'local' => \Deplink\Repositories\Providers\LocalRepository::class,
+        'remote' => \Deplink\Repositories\Providers\RemoteRepository::class,
     ],
 
     /**
      * Default repositories added at the end of the list of package repositories.
      */
     'defaults' => [
-        // ...
+        [
+            "type" => "remote",
+            "src" => "https://repo.deplink.org",
+        ],
     ],
 
 ];
