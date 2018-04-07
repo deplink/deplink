@@ -7,6 +7,7 @@ use Deplink\Downloaders\DownloadingProgress;
 use Deplink\Downloaders\Fixtures\DummyDownloadingProgress;
 use Deplink\Environment\Config;
 use Deplink\Environment\Filesystem;
+use Deplink\Environment\System;
 use Deplink\Packages\LocalPackage;
 use Deplink\Packages\PackageFactory;
 use Deplink\Repositories\Exceptions\UnreachableRemoteRepositoryException;
@@ -64,10 +65,16 @@ class RemoteDownloader implements Downloader
     private $cache = [];
 
     /**
+     * @var System
+     */
+    private $system;
+
+    /**
      * @param Filesystem $fs
      * @param PackageFactory $packageFactory
      * @param ClientInterface $client
      * @param Config $config
+     * @param System $system
      * @param string $baseUrl
      * @param string $packageName
      */
@@ -76,6 +83,7 @@ class RemoteDownloader implements Downloader
         PackageFactory $packageFactory,
         ClientInterface $client,
         Config $config,
+        System $system,
         $baseUrl,
         $packageName
     ) {
@@ -85,6 +93,7 @@ class RemoteDownloader implements Downloader
         $this->config = $config;
         $this->baseUrl = $baseUrl;
         $this->packageName = $packageName;
+        $this->system = $system;
     }
 
     /**
@@ -121,9 +130,14 @@ class RemoteDownloader implements Downloader
     protected function getArchiveCachePath($version)
     {
         $dir = $this->config->get('cache.downloaders.remote.dir');
-        $this->fs->touchDir(ROOT_DIR . "/$dir/{$this->packageName}");
+        if ($this->system->isPlatform(System::WINDOWS)) {
+            $dir = getenv('LOCALAPPDATA') . '/Deplink/' . $dir;
+        } else {
+            $dir = "~/.deplink/$dir";
+        }
 
-        return ROOT_DIR . "/$dir/{$this->packageName}/$version.zip";
+        $this->fs->touchDir("$dir/{$this->packageName}");
+        return "$dir/{$this->packageName}/$version.zip";
     }
 
     /**
@@ -180,7 +194,6 @@ class RemoteDownloader implements Downloader
                 $srcLastChar = substr($filePath, -1, 1);
                 $isFile = $srcLastChar !== '/' && $srcLastChar !== '\\';
                 if ($isFile) {
-                    //$srcPath = $this->fs->path("zip://" . $zipPath . "#" . $filePath);
                     $destPath = $this->fs->path($this->destDir, $filePath);
                     $this->fs->writeFile($destPath, $zip->getFromIndex($i));
                 }
