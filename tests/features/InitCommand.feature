@@ -14,6 +14,17 @@ Feature: Init command
       }
       """
 
+  Scenario: Default name with strange characters
+    Given I am in "UpperCase with space/and arrow▶" directory
+    When I run "deplink init"
+    Then I should have file "deplink.json" with contents:
+      """
+      {
+          "name": "uppercase-with-space/and-arrow-",
+          "type": "project"
+      }
+      """
+
   Scenario: Specifying package name
     When I run "deplink init hello/world"
     Then I should have file "deplink.json" which contains "\"name\": \"hello/world\""

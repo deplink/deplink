@@ -76,6 +76,10 @@ class InitCommand extends BaseCommand
             $package = array_pop($parts) ?: 'package';
             $org = array_pop($parts) ?: 'org';
 
+            // Normalize variables
+            $package = preg_replace('/[^a-z0-9-]+/', '-', strtolower($package));
+            $org = preg_replace('/[^a-z0-9-]+/', '-', strtolower($org));
+
             $name = "$org/$package";
         }
 
