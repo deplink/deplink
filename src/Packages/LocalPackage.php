@@ -138,7 +138,7 @@ class LocalPackage
     public function setName($name)
     {
         if (!preg_match('#^[a-z0-9-]+/[a-z0-9-]+$#', $name)) {
-            throw new \InvalidArgumentException("Invalid '$name' package name, use org/package format (only alphanumeric and dashes allowed)");
+            throw new \InvalidArgumentException("Invalid '$name' package name, use org/package format (only lowercase alphanumeric and dashes are allowed)");
         }
 
         $this->name = $name;
