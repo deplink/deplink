@@ -189,7 +189,21 @@ Feature: Install command
         - Updating basic/log (v1.2.0 -> v2.0.0)
       """
 
-  # TODO: Dependencies tree conflict (deplink.json requires 2.* version, but only 1.* are available)
+  Scenario: Dependencies tree conflict (versions)
+    Given there is package which requires:
+      | package   | version |
+      | basic/log | 0.1.0   |
+    And local repository contains packages:
+      | package   | version |
+      | basic/log | v1.2.0  |
+    When I run "deplink install --no-progress"
+    Then the console output should contains:
+      """
+      None of the available versions for 'basic/log' dependency match requested constraints:
+       - available versions: v1.2.0.
+       - requested constraints: 0.1.0.
+      """
+
   # TODO: Upgrade locked dependency along with deplink.json (requires remote repository)
 
   Scenario: Install package not listed in deplink.lock file

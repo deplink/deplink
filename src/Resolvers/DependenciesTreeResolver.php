@@ -54,6 +54,11 @@ class DependenciesTreeResolver
     private $unlocked;
 
     /**
+     * @var array.
+     */
+    private $fails;
+
+    /**
      * @var LockFactory
      */
     protected $lockFactory;
@@ -138,6 +143,7 @@ class DependenciesTreeResolver
      */
     public function snapshot($includeDev = true)
     {
+        $this->fails = [];
         $this->locked = $this->lockFactory->makeFromFileOrEmpty('deplink.lock');
         $this->project = $this->packageFactory->makeFromDir('.');
 
@@ -190,8 +196,16 @@ class DependenciesTreeResolver
             return $states;
         }
 
-        // Not found satisfiable state.
-        // TODO: More details about conflicts and how to resolve them.
+        $commonFail = $this->getCommonFail();
+        if (!empty($commonFail)) {
+            $msg = "None of the available versions for '{$commonFail->package}' dependency match requested constraints:\r\n";
+            $msg .= ' - available versions: ' . implode(', ', $commonFail->data->available) . ".\r\n";
+            $msg .= ' - requested constraints: ' . $commonFail->data->requested . '.';
+
+            throw new ConflictsBetweenDependenciesException($msg);
+        }
+
+        // Not found satisfiable state, no details about issue.
         throw new ConflictsBetweenDependenciesException("Cannot resolve dependencies tree.");
     }
 
@@ -224,6 +238,15 @@ class DependenciesTreeResolver
             $versions = $remote->getVersionFinder()->getSatisfiedBy(
                 $state->getConstraint($dependency->getPackageName())
             );
+
+            // Register potential issue (dependency tree conflict).
+            if (empty($versions)) {
+                $this->fail($dependency->getPackageName(), (object)[
+                    'available' => $remote->getVersionFinder()->get(),
+                    'requested' => $state->getConstraint($dependency->getPackageName()),
+                ]);
+                continue;
+            }
 
             // Emit new state for each version of dependency.
             // TODO: Pick newest version if unlocked (update), preferred version, locked version or newest one.
@@ -294,5 +317,31 @@ class DependenciesTreeResolver
     public function hasSnapshot()
     {
         return !is_null($this->snapshotAt);
+    }
+
+    protected function fail($packageName, $data)
+    {
+        if (!isset($this->fails[$packageName])) {
+            $this->fails[$packageName] = [];
+        }
+
+        $this->fails[$packageName][] = $data;
+    }
+
+    protected function getCommonFail()
+    {
+        $common = null;
+        $commonScore = 0;
+        foreach ($this->fails as $packageName => $failData) {
+            if (count($failData) > $commonScore) {
+                $commonScore = count($failData);
+                $common = (object)[
+                    'package' => $packageName,
+                    'data' => $failData[0],
+                ];
+            }
+        }
+
+        return $common;
     }
 }
