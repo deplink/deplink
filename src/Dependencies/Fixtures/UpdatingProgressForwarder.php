@@ -50,11 +50,7 @@ class UpdatingProgressForwarder implements DownloadingProgress
 
     public function downloadingSucceed()
     {
-        $this->progress->updatingSucceed(
-            $this->package->getName(),
-            $this->package->getSourceVersion(),
-            $this->package->getTargetVersion()
-        );
+        // Should do nothing
     }
 
     /**

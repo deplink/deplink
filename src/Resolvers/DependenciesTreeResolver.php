@@ -267,6 +267,7 @@ class DependenciesTreeResolver
             }
 
             // Repeat states generating for nested dependencies.
+            $withoutDependenciesRegistered = false;
             foreach ($versions as $version) {
                 $package = $remote->getDownloader()->requestDetails($version);
 
@@ -289,7 +290,9 @@ class DependenciesTreeResolver
 
                 // If package doesn't contains any dependencies
                 // then we can assume that all states are valid.
-                if (empty($package->getDependencies())) {
+                if (empty($package->getDependencies())
+                && !$withoutDependenciesRegistered) {
+                    $withoutDependenciesRegistered = true;
                     $resultStates = array_merge(
                         $resultStates,
                         $newStates

@@ -28,6 +28,14 @@ class DependenciesTreeState
     }
 
     /**
+     * Enable object deep copy.
+     */
+    public function __clone()
+    {
+        $this->packages = clone($this->packages);
+    }
+
+    /**
      * @param string $packageName
      * @param string $version
      * @param RemotePackage $remote

@@ -59,7 +59,7 @@ class InstallationProgressFormater implements InstallingProgress
     public function removingStarted($packageName)
     {
         if ($this->trackProgress) {
-            $this->output->write("  - Removing <info>$packageName</info>");
+            $this->output->write("  - Removing <info>$packageName</info>\r");
         }
     }
 
@@ -70,7 +70,7 @@ class InstallationProgressFormater implements InstallingProgress
     public function removingProgress($packageName, $percentage)
     {
         if ($this->trackProgress) {
-            $this->output->write("\r  - Removing <info>$packageName</info>... $percentage%");
+            $this->output->write("  - Removing <info>$packageName</info>... $percentage%\r");
         }
     }
 
@@ -80,7 +80,7 @@ class InstallationProgressFormater implements InstallingProgress
     public function removingSucceed($packageName)
     {
         // The 8 spaces at the end overwrites the "... 100%" part.
-        $this->output->writeln("\r  - Removing <info>$packageName</info>        ");
+        $this->output->writeln("  - Removing <info>$packageName</info>        ");
     }
 
     /**
@@ -104,7 +104,7 @@ class InstallationProgressFormater implements InstallingProgress
             $sourceVersion = $this->normalizeVersion($sourceVersion);
             $targetVersion = $this->normalizeVersion($targetVersion);
 
-            $this->output->write("  - Updating <info>$packageName</info> (<info>$sourceVersion -> $targetVersion</info>)");
+            $this->output->write("  - Updating <info>$packageName</info> (<info>$sourceVersion -> $targetVersion</info>)\r");
         }
     }
 
@@ -120,7 +120,7 @@ class InstallationProgressFormater implements InstallingProgress
             $sourceVersion = $this->normalizeVersion($sourceVersion);
             $targetVersion = $this->normalizeVersion($targetVersion);
 
-            $this->output->write("  - Updating <info>$packageName</info> (<info>$sourceVersion -> $targetVersion</info>)... $percentage%");
+            $this->output->write("  - Updating <info>$packageName</info> (<info>$sourceVersion -> $targetVersion</info>)... $percentage%\r");
         }
     }
 
@@ -135,7 +135,7 @@ class InstallationProgressFormater implements InstallingProgress
         $targetVersion = $this->normalizeVersion($targetVersion);
 
         // The 8 spaces at the end overwrites the "... 100%" part.
-        $this->output->writeln("\r  - Updating <info>$packageName</info> (<info>$sourceVersion -> $targetVersion</info>)        ");
+        $this->output->writeln("  - Updating <info>$packageName</info> (<info>$sourceVersion -> $targetVersion</info>)        ");
     }
 
     /**
@@ -159,7 +159,7 @@ class InstallationProgressFormater implements InstallingProgress
         if ($this->trackProgress) {
             $version = $this->normalizeVersion($version);
 
-            $this->output->write("  - Installing <info>$packageName</info> (<info>$version</info>)");
+            $this->output->write("  - Installing <info>$packageName</info> (<info>$version</info>)\r");
         }
     }
 
@@ -173,7 +173,7 @@ class InstallationProgressFormater implements InstallingProgress
         if ($this->trackProgress) {
             $version = $this->normalizeVersion($version);
 
-            $this->output->write("  - Installing <info>$packageName</info> (<info>$version</info>)... $percentage%");
+            $this->output->write("  - Installing <info>$packageName</info> (<info>$version</info>)... $percentage%\r");
         }
     }
 
@@ -186,7 +186,7 @@ class InstallationProgressFormater implements InstallingProgress
         $version = $this->normalizeVersion($version);
 
         // The 8 spaces at the end overwrites the "... 100%" part.
-        $this->output->writeln("\r  - Installing <info>$packageName</info> (<info>$version</info>)        ");
+        $this->output->writeln("  - Installing <info>$packageName</info> (<info>$version</info>)        ");
     }
 
     /**

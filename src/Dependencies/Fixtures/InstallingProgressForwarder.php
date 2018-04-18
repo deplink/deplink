@@ -49,10 +49,7 @@ class InstallingProgressForwarder implements DownloadingProgress
 
     public function downloadingSucceed()
     {
-        $this->progress->installingSucceed(
-            $this->package->getName(),
-            $this->package->getVersion()
-        );
+        // Should do nothing
     }
 
     /**
