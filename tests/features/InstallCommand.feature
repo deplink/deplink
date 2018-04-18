@@ -263,3 +263,6 @@ Feature: Install command
 
   # TODO: install newest available and compatible version (how to test? local repository allows hosting only one version)
   # TODO: Online repository tests
+
+  # TODO: install version A (A < B), remove deplinks dir and repeat install (should install A)
+  # TODO: install version A (A < B), update to B, repeat install (should update to B, check lock file)

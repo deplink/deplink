@@ -161,7 +161,10 @@ class InstallCommand extends BaseCommand
             new InstallationProgressFormater($this->output, $trackProgress)
         );
 
-        $this->installed = $newlyInstalled->merge($this->manager->getInstalled());
+        // We merge newly installed packages to the old ones
+        // to override information about packages, like version
+        // which is used to generate a lock file.
+        $this->installed = $this->manager->getInstalled()->merge($newlyInstalled);
     }
 
     private function writeLockFile()
