@@ -57,9 +57,7 @@ class LocalPackage
     private $compilers = [];
 
     /**
-     * TODO
-     *
-     * @var PlatformConstraintObject[]
+     * @var string[]
      */
     private $platforms = [];
 
@@ -338,6 +336,24 @@ class LocalPackage
     public function hasLinkingType($linkingType)
     {
         return array_search($linkingType, $this->getLinkingTypes()) !== false;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPlatforms()
+    {
+        return $this->platforms;
+    }
+
+    /**
+     * @param string|string[] $platforms
+     * @return LocalPackage
+     */
+    public function setPlatforms($platforms)
+    {
+        $this->platforms = (array)$platforms;
+        return $this;
     }
 
     /**

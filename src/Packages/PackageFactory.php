@@ -184,8 +184,9 @@ class PackageFactory
         $package->setVersion($this->get($json, 'version'));
         $package->setIncludeDirs($this->get($json, 'include', 'include'));
         $package->setSourceDirs($this->get($json, 'source', 'src'));
-        $package->setLinkingTypes($this->get($json, 'linking', ['static', 'dynamic']));
+        $package->setArchitectures($this->get($json, 'platforms', ['windows', 'linux', 'mac']));
         $package->setArchitectures($this->get($json, 'arch', ['x86', 'x64']));
+        $package->setLinkingTypes($this->get($json, 'linking', ['static', 'dynamic']));
 
         $config = $this->get($json, 'config', null);
         $package->setConfig(ConstraintObject::hydrate($config));
