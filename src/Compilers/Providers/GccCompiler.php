@@ -210,14 +210,15 @@ class GccCompiler extends BaseCompiler
     /**
      * @param string $outputFile File path without extension.
      * @return string Path to the output file.
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Environment\Exceptions\UnknownException
      */
     public function buildStaticLibrary($outputFile)
     {
-        $objPath = $outputFile . '.o';
         $outputPath = $this->system->toStaticLibPath($outputFile);
-
-        // Object file
-        $this->buildObjectFile($objPath);
+        $objFiles = $this->buildObjectFiles(
+            $this->fs->getDirName($outputFile)
+        );
 
         // Library file
         $this->run('ar',
@@ -226,7 +227,7 @@ class GccCompiler extends BaseCompiler
             // and "s" means to write an index.
             'rcs',
             $outputPath,
-            $objPath
+            $objFiles
         );
 
         return $outputPath;
@@ -250,34 +251,48 @@ class GccCompiler extends BaseCompiler
     }
 
     /**
-     * @param string $objOutput Object output path.
+     * @param string $dir
+     * @return string[]
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Environment\Exceptions\UnknownException
      */
-    private function buildObjectFile($objOutput)
+    private function buildObjectFiles($dir)
     {
-        $this->run($this->cmd,
-            '-c', // compile and assemble, but do not link
-            $this->sourceFiles,
-            ['-o', $objOutput],
-            $this->debugSymbols ? '-g' : [],
-            $this->intermediateFiles ? '-save-temps=obj' : [],
-            self::ARCHITECTURE_OPTIONS[$this->architecture],
-            $this->getMacrosCommandOptions(),
-            $this->getIncludeDirsCommandOptions(),
-            $this->getDefaultArgs()
-        );
+        $objects = [];
+        foreach($this->sourceFiles as $sourceFile) {
+            $path = $this->fs->path($dir, $this->fs->truncateExtension($sourceFile) .'.o');
+            $this->fs->touchDir($this->fs->getDirName($path));
+
+            $this->run($this->cmd,
+                '-c', // compile and assemble, but do not link
+                $sourceFile,
+                ['-o', $path],
+                $this->debugSymbols ? '-g' : [],
+                $this->intermediateFiles ? '-save-temps=obj' : [],
+                self::ARCHITECTURE_OPTIONS[$this->architecture],
+                $this->getMacrosCommandOptions(),
+                $this->getIncludeDirsCommandOptions(),
+                $this->getDefaultArgs()
+            );
+
+            $objects[] = $path;
+        }
+
+        return $objects;
     }
 
     /**
      * @param string $outputFile File path without extension.
      * @return string Path to the output file.
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Environment\Exceptions\UnknownException
      */
     public function buildSharedLibrary($outputFile)
     {
-        $objPath = $outputFile . '.o';
         $outputPath = $this->system->toSharedLibPath($outputFile);
-
-        // Object file
-        $this->buildObjectFile($objPath);
+        $objFiles = $this->buildObjectFiles(
+            $this->fs->getDirName($outputFile)
+        );
 
         // Library file
         $this->run($this->cmd,
@@ -285,7 +300,7 @@ class GccCompiler extends BaseCompiler
             self::ARCHITECTURE_OPTIONS[$this->architecture],
             ['-o', $outputPath],
             $this->getDefaultArgs(),
-            $objPath
+            $objFiles
         );
 
         return $outputPath;
