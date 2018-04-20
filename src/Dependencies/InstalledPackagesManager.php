@@ -80,7 +80,7 @@ class InstalledPackagesManager
      */
     private function listLockedPackages()
     {
-        $installed = $this->lockFactory->makeFromFileOrEmpty('deplinks/installed.lock');
+        $installed = $this->lockFactory->makeFromFileOrEmpty('deplink.lock');
         return $installed->packages();
     }
 

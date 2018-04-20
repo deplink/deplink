@@ -10,7 +10,6 @@ use Deplink\Dependencies\Installer;
 use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
 use Deplink\Resolvers\DependenciesTreeResolver;
-use Deplink\Resolvers\DependenciesTreeState;
 use DI\Container;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -182,7 +181,7 @@ class InstallCommand extends BaseCommand
         }
 
         $this->fs->writeFile(
-            'deplinks/installed.lock',
+            'deplink.lock',
             $lockFile->getJson()
         );
 
