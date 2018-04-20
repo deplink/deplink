@@ -152,7 +152,7 @@ class RemoteDownloader implements Downloader
     public function download($version, DownloadingProgress $progress = null)
     {
         // Assign dummy progress listener to avoid errors
-        if (!is_null($progress)) {
+        if (is_null($progress)) {
             $progress = new DummyDownloadingProgress();
         }
 

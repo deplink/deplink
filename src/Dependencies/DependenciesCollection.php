@@ -84,6 +84,7 @@ class DependenciesCollection
 
     /**
      * Add items to the collection from the specified collection.
+     * Items which exists in collection will be overridden by new one.
      *
      * @param DependenciesCollection $collection
      * @return $this

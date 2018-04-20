@@ -18,13 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
 class InstallCommand extends BaseCommand
 {
     /**
-     * Resolved dependencies tree states.
-     *
-     * @var DependenciesTreeState
-     */
-    protected $states;
-
-    /**
      * Packages installed in the deplinks directory
      * (after installation process).
      *
@@ -156,20 +149,22 @@ class InstallCommand extends BaseCommand
         $manager = $this->di->get(DependenciesTreeResolver::class);
         $manager->snapshot(!$this->input->getOption('no-dev'));
 
-        $this->states = $manager->getResolvedStates();
         $this->output->writeln('<info>OK</info>');
     }
 
     private function installDependencies()
     {
         $installer = $this->di->get(Installer::class);
-        $trackProgress = !$this->input->hasOption('no-progress');
+        $trackProgress = !$this->input->getOption('no-progress');
 
         $newlyInstalled = $installer->install(
             new InstallationProgressFormater($this->output, $trackProgress)
         );
 
-        $this->installed = $newlyInstalled->merge($this->manager->getInstalled());
+        // We merge newly installed packages to the old ones
+        // to override information about packages, like version
+        // which is used to generate a lock file.
+        $this->installed = $this->manager->getInstalled()->merge($newlyInstalled);
     }
 
     private function writeLockFile()

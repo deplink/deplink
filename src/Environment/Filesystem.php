@@ -400,4 +400,15 @@ class Filesystem
             throw new FileCopyException("Failed to copy '$from' to '$to' (unknown reason). Please check directories permissions.");
         }
     }
+
+    /**
+     * Get file path without extension.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function truncateExtension($path)
+    {
+        return substr($path, 0 , (strrpos($path, ".")));
+    }
 }
