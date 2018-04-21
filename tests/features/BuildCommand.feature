@@ -154,3 +154,5 @@ Feature: Build command
       Dependencies: 0 builds, 1 up-to-date
       Building project... OK
       """
+
+  # TODO: If arch is set to x86 then dependencies should be build only using the x86 arch (only build/x86 dir should exists)

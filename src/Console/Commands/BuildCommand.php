@@ -80,9 +80,11 @@ class BuildCommand extends BaseCommand
      * and show error message, otherwise exits with code 0.
      *
      * @return void|int Exit code, if not provided then status code 0 is returned.
+     * @throws \Exception
      */
     protected function exec()
     {
+        $this->checkProject();
         $this->installDependencies();
         $this->buildDependencies();
         $this->copyLibrariesToBuildDir();
@@ -121,6 +123,7 @@ class BuildCommand extends BaseCommand
 
             $builder = $this->factory->makeBuildChain("deplinks/$packageName");
             $builder->setDependenciesDir($dependenciesAbsPath)
+                ->setArchitectures($this->package->getArchitectures())
                 ->debugMode(!$this->input->getOption('no-dev'))
                 ->build();
         }
@@ -131,7 +134,7 @@ class BuildCommand extends BaseCommand
         $packages = $this->packagesManager->getInstalled();
         foreach ($packages->getPackagesNames() as $name) {
             $package = $packages->get($name)->getLocal();
-            foreach ($package->getArchitectures() as $arch) {
+            foreach ($this->package->getArchitectures() as $arch) {
                 $libFile = str_replace('/', '-', $package->getName());
                 $libPath = $this->fs->path('deplinks', $name, 'build', $arch, $libFile);
                 $destPath = $this->fs->path('build', $arch, $libFile);

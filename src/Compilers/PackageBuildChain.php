@@ -15,6 +15,11 @@ use Deplink\Packages\PackageFactory;
 class PackageBuildChain
 {
     /**
+     * @var string[]
+     */
+    private $architectures;
+
+    /**
      * @var Compiler
      */
     private $compiler;
@@ -139,7 +144,7 @@ class PackageBuildChain
             $this->package = $this->packageFactory->makeFromDir('.');
             $this->compiler = $this->compilerFactory->negotiate($this->package->getCompilers());
 
-            foreach ($this->package->getArchitectures() as $arch) {
+            foreach ($this->getArchitectures() as $arch) {
                 $this->compiler->reset();
 
                 $this->setCompilerOptions($arch);
@@ -282,5 +287,30 @@ class PackageBuildChain
                 $this->fs->copyFile($srcPath, $dstPath);
             }
         }
+    }
+
+    /**
+     * @param string[] $architectures
+     * @return PackageBuildChain
+     */
+    public function setArchitectures($architectures)
+    {
+        $this->architectures = $architectures;
+        return $this;
+    }
+
+    /**
+     * Get predefined architectures or by default
+     * architectures supported by the package.
+     *
+     * @return string[]
+     */
+    protected function getArchitectures()
+    {
+        if (!empty($this->architectures)) {
+            return $this->architectures;
+        }
+
+        return $this->package->getArchitectures();
     }
 }
