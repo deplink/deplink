@@ -266,3 +266,6 @@ Feature: Install command
 
   # TODO: install version A (A < B), remove deplinks dir and repeat install (should install A)
   # TODO: install version A (A < B), update to B, repeat install (should update to B, check lock file)
+  # TODO: jesli zdalne repozytorium rzuci blad 404/500 (lub dowolny inny) to nie mozna dodawac biblioteki do deplink.json (moze cos w stylu - "do you mean?")
+
+  # TODO: check if cache directory is created in home directory (no in poject dir "~" - issue with tilde symbol)
