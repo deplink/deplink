@@ -93,7 +93,7 @@ class System
             return $carry | $item;
         }, 0);
 
-        return $this->getPlatform() == $platforms;
+        return $this->getPlatform() & $platforms;
     }
 
     /**
