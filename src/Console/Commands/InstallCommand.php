@@ -35,6 +35,11 @@ class InstallCommand extends BaseCommand
     private $lockFactory;
 
     /**
+     * @var string
+     */
+    private $packageFile;
+
+    /**
      * InstallCommand constructor.
      *
      * @param Filesystem $fs
@@ -79,11 +84,17 @@ class InstallCommand extends BaseCommand
         $this->checkProject();
         $this->checkArguments();
         $this->updateProjectPackage();
-        $this->retrieveInstalledDependencies();
-        $this->resolveDependenciesTree();
-        $this->installDependencies();
-        $this->writeLockFile();
-        $this->writeAutoloadHeader();
+
+        try {
+            $this->retrieveInstalledDependencies();
+            $this->resolveDependenciesTree();
+            $this->installDependencies();
+            $this->writeLockFile();
+            $this->writeAutoloadHeader();
+        } catch (\Exception $e) {
+            $this->revertProjectPackage();
+            throw $e;
+        }
     }
 
     private function checkArguments()
@@ -101,7 +112,8 @@ class InstallCommand extends BaseCommand
             return;
         }
 
-        $file = json_decode($this->fs->readFile('deplink.json'));
+        $this->packageFile = $this->fs->readFile('deplink.json');
+        $file = json_decode($this->packageFile);
         $section = $this->input->getOption('dev') ? 'dev-dependencies' : 'dependencies';
 
         if (!isset($file->{$section})) {
@@ -117,6 +129,11 @@ class InstallCommand extends BaseCommand
 
         $json = json_encode($file, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $this->fs->writeFile('deplink.json', $json);
+    }
+
+    private function revertProjectPackage()
+    {
+        $this->fs->writeFile('deplink.json', $this->packageFile);
     }
 
     private function retrieveInstalledDependencies()

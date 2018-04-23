@@ -105,6 +105,18 @@ class FilesystemContext extends BaseContext
     }
 
     /**
+     * @Given the :file file shouldn't contains:
+     */
+    public function theFileShouldNotContains($file, PyStringNode $string)
+    {
+        $given = $this->fs->readFile($file);
+        $given = preg_replace('/\s+/', ' ', $given);
+        $notExpected = preg_replace('/\s+/', ' ', $string->getRaw());
+
+        Assert::assertNotContains($notExpected, $given);
+    }
+
+    /**
      * @Given there is :file file with contents:
      */
     public function thereIsFileWithContents($file, PyStringNode $string)
