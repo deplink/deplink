@@ -133,7 +133,7 @@ class RemoteDownloader implements Downloader
         if ($this->system->isPlatform(System::WINDOWS)) {
             $dir = getenv('LOCALAPPDATA') . '/Deplink/' . $dir;
         } else {
-            $dir = "~/.deplink/$dir";
+            $dir = getenv('HOME') ."/.deplink/$dir";
         }
 
         $this->fs->touchDir("$dir/{$this->packageName}");

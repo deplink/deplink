@@ -245,6 +245,16 @@ Feature: Install command
         - Installing deplink/sample (v1.0.0)
       """
 
+  @linux
+  Scenario: Prevents creating cache in project directory
+    # There was an error on Linux which causes to store cached packages
+    # in the project directory in "~" folder (it should point to home dir).
+    Given there is empty package
+    When I run "deplink install deplink/sample --no-progress"
+    Then I shouldn't have directory "~"
+
+  # TODO: check if cache directory is created in home directory (no in poject dir "~" - issue with tilde symbol)
+
   # TODO: Install locked version of the dependencies (require remote repository)
   # TODO: cleanup deplinks directory if installed.lock file is missing
   # TODO: delete mismatches between installed.lock and directory structure
@@ -267,5 +277,3 @@ Feature: Install command
   # TODO: install version A (A < B), remove deplinks dir and repeat install (should install A)
   # TODO: install version A (A < B), update to B, repeat install (should update to B, check lock file)
   # TODO: jesli zdalne repozytorium rzuci blad 404/500 (lub dowolny inny) to nie mozna dodawac biblioteki do deplink.json (moze cos w stylu - "do you mean?")
-
-  # TODO: check if cache directory is created in home directory (no in poject dir "~" - issue with tilde symbol)

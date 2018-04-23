@@ -7,7 +7,7 @@ default:
             paths:
               - %paths.base%/tests/features
             filters:
-              tags: "~@unimplemented"
+              tags: ~@unimplemented
             contexts:
               - CommandContext
               - FilesystemContext

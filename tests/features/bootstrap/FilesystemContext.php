@@ -32,6 +32,22 @@ class FilesystemContext extends BaseContext
     }
 
     /**
+     * @Given I should have directory :directory
+     */
+    public function iShouldHaveDirectory($directory)
+    {
+        Assert::assertDirectoryExists($directory);
+    }
+
+    /**
+     * @Given I shouldn't have directory :directory
+     */
+    public function iShouldnTHaveDirectory($directory)
+    {
+        Assert::assertDirectoryNotExists($directory);
+    }
+
+    /**
      * @Given there is :file file
      */
     public function thereIsFile($file)
