@@ -32,6 +32,22 @@ class FilesystemContext extends BaseContext
     }
 
     /**
+     * @Given I should have directory :directory
+     */
+    public function iShouldHaveDirectory($directory)
+    {
+        Assert::assertDirectoryExists($directory);
+    }
+
+    /**
+     * @Given I shouldn't have directory :directory
+     */
+    public function iShouldnTHaveDirectory($directory)
+    {
+        Assert::assertDirectoryNotExists($directory);
+    }
+
+    /**
      * @Given there is :file file
      */
     public function thereIsFile($file)
@@ -86,6 +102,18 @@ class FilesystemContext extends BaseContext
         $expected = preg_replace('/\s+/', ' ', $string->getRaw());
 
         Assert::assertContains($expected, $given);
+    }
+
+    /**
+     * @Given the :file file shouldn't contains:
+     */
+    public function theFileShouldNotContains($file, PyStringNode $string)
+    {
+        $given = $this->fs->readFile($file);
+        $given = preg_replace('/\s+/', ' ', $given);
+        $notExpected = preg_replace('/\s+/', ' ', $string->getRaw());
+
+        Assert::assertNotContains($notExpected, $given);
     }
 
     /**
