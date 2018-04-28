@@ -67,6 +67,14 @@ class CommandContext extends BaseContext
     }
 
     /**
+     * @Then command should not exit with status code :exitCode
+     */
+    public function commandShouldNotExitWithStatusCode($exitCode)
+    {
+        Assert::assertNotEquals($exitCode, $this->exitCode);
+    }
+
+    /**
      * @Then the console output should contains :sentence
      */
     public function theConsoleOutputShouldContains($sentence)

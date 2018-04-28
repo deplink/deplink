@@ -1,5 +1,8 @@
 {
     "name": "hello/world",
     "type": "library",
-    "version": "v1.0.0"
+    "version": "v1.0.0",
+    "compilers": {
+        "g++": "*"
+    }
 }

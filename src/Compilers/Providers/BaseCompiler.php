@@ -3,6 +3,8 @@
 namespace Deplink\Compilers\Providers;
 
 use Deplink\Compilers\Compiler;
+use Deplink\Compilers\Exceptions\BuildingPackageException;
+use Symfony\Component\Process\Process;
 
 abstract class BaseCompiler implements Compiler
 {
@@ -201,6 +203,7 @@ abstract class BaseCompiler implements Compiler
 
     /**
      * @param mixed $args,... Arguments combined with space.
+     * @throws BuildingPackageException
      */
     protected function run(...$args)
     {
@@ -210,7 +213,14 @@ abstract class BaseCompiler implements Compiler
 
         $command = implode(' ', array_map($arrToString, $args));
 
-        exec($command);
+        $process = new Process($command);
+        $process->run(function ($type, $buffer) {
+            echo "\r\n$buffer";
+        });
+
+        if(!$process->isSuccessful()) {
+            throw new BuildingPackageException("The below command returns exit code {$process->getExitCode()}:\r\n$command", $process->getExitCode());
+        }
     }
 
     /**

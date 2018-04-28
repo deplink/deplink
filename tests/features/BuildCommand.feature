@@ -81,11 +81,11 @@ Feature: Build command
         "name": "test/package",
         "type": "project",
         "compilers": {
-          "gcc": "*"
+          "g++": "*"
         },
         "config": {
           "compilers": {
-            "gcc:x64": "-save-temps=obj"
+            "g++:x64": "-save-temps=obj"
           }
         }
       }
@@ -120,7 +120,7 @@ Feature: Build command
         return 0;
       }
       """
-    When I run "deplink build --no-progress"
+    When I run "deplink build --compiler=g++ --no-progress"
     Then command should exit with status code 0
     And I should have 1 of files:
       | path                        |
@@ -155,4 +155,25 @@ Feature: Build command
       Building project... OK
       """
 
+  Scenario: Treat .cpp files as .c with gcc
+    # Following program compiles & runs fine in C, but fails in compilation in C++.
+    # Const variable in C++ must be initialized but in c it isn’t necessary.
+    # Source: https://www.geeksforgeeks.org/write-c-program-wont-compiler-c
+    Given there is empty package
+    And there is "src/main.cpp" file with contents:
+      """
+      #include <stdio.h>
+
+      int main()
+      {
+          const int a;
+          return 0;
+      }
+      """
+    When I run "deplink build --compiler=gcc --no-progress"
+    Then command should exit with status code 0
+    When I run "deplink build --compiler=g++ --no-progress"
+    Then command should not exit with status code 0
+
   # TODO: If arch is set to x86 then dependencies should be build only using the x86 arch (only build/x86 dir should exists)
+  # TODO: User friendly message when I select invalid compiler via --compiler option
