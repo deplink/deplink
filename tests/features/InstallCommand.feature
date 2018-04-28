@@ -286,3 +286,6 @@ Feature: Install command
 
   # TODO: install version A (A < B), remove deplinks dir and repeat install (should install A)
   # TODO: install version A (A < B), update to B, repeat install (should update to B, check lock file)
+
+  # TODO: add test for script at homepage (deplink.org)
+  # TODO: add test for script from getting started page (first project)
