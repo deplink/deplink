@@ -20,6 +20,13 @@ class GccCompiler extends BaseCompiler
     protected $cmd = "gcc";
 
     /**
+     * See gcc -x option.
+     *
+     * @var string
+     */
+    protected $langOption = "-x c";
+
+    /**
      * Console options required by the specified architectures.
      *
      * @var array
@@ -32,12 +39,12 @@ class GccCompiler extends BaseCompiler
     /**
      * @var Filesystem
      */
-    private $fs;
+    protected $fs;
 
     /**
      * @var System
      */
-    private $system;
+    protected $system;
 
     /**
      * GccCompiler constructor.
@@ -121,13 +128,14 @@ class GccCompiler extends BaseCompiler
     /**
      * @param string $outputFile File path without extension.
      * @return string Path to the output file.
+     * @throws \Deplink\Compilers\Exceptions\BuildingPackageException
      */
     public function buildExecutable($outputFile)
     {
         $outputPath = $this->system->toExePath($outputFile);
 
         $this->run($this->cmd,
-            '-Wall', // all warnings messages
+            $this->langOption,
             $this->sourceFiles,
             self::ARCHITECTURE_OPTIONS[$this->architecture],
             ['-o', $outputPath],
@@ -212,6 +220,7 @@ class GccCompiler extends BaseCompiler
      * @return string Path to the output file.
      * @throws \Deplink\Environment\Exceptions\InvalidPathException
      * @throws \Deplink\Environment\Exceptions\UnknownException
+     * @throws \Deplink\Compilers\Exceptions\BuildingPackageException
      */
     public function buildStaticLibrary($outputFile)
     {
@@ -255,6 +264,7 @@ class GccCompiler extends BaseCompiler
      * @return string[]
      * @throws \Deplink\Environment\Exceptions\InvalidPathException
      * @throws \Deplink\Environment\Exceptions\UnknownException
+     * @throws \Deplink\Compilers\Exceptions\BuildingPackageException
      */
     private function buildObjectFiles($dir)
     {
@@ -265,6 +275,7 @@ class GccCompiler extends BaseCompiler
 
             $this->run($this->cmd,
                 '-c', // compile and assemble, but do not link
+                $this->langOption,
                 $sourceFile,
                 ['-o', $path],
                 $this->debugSymbols ? '-g' : [],
@@ -286,6 +297,7 @@ class GccCompiler extends BaseCompiler
      * @return string Path to the output file.
      * @throws \Deplink\Environment\Exceptions\InvalidPathException
      * @throws \Deplink\Environment\Exceptions\UnknownException
+     * @throws \Deplink\Compilers\Exceptions\BuildingPackageException
      */
     public function buildSharedLibrary($outputFile)
     {

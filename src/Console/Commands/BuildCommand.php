@@ -52,7 +52,8 @@ class BuildCommand extends BaseCommand
         HierarchyFinder $hierarchyFinder,
         InstalledPackagesManager $packagesManager,
         System $system
-    ) {
+    )
+    {
         $this->factory = $factory;
         $this->hierarchyFinder = $hierarchyFinder;
         $this->packagesManager = $packagesManager;
@@ -70,7 +71,9 @@ class BuildCommand extends BaseCommand
             ->addOption('no-progress', null, InputOption::VALUE_NONE,
                 'Outputs only steps without showing dynamic progress')
             ->addOption('working-dir', 'd', InputOption::VALUE_REQUIRED,
-                'Use the given directory as working directory', '.');
+                'Use the given directory as working directory', '.')
+            ->addOption('compiler', 'c', InputOption::VALUE_REQUIRED,
+                'Force to use specified compiler regardless to the deplink.json settings');
     }
 
     /**
@@ -123,6 +126,7 @@ class BuildCommand extends BaseCommand
 
             $builder = $this->factory->makeBuildChain("deplinks/$packageName");
             $builder->setDependenciesDir($dependenciesAbsPath)
+                ->setCompiler($this->input->getOption('compiler'))
                 ->setArchitectures($this->package->getArchitectures())
                 ->debugMode(!$this->input->getOption('no-dev'))
                 ->build();
@@ -160,6 +164,7 @@ class BuildCommand extends BaseCommand
     {
         $builder = $this->factory->makeBuildChain('.');
         $builder->setDependenciesDir('deplinks')
+            ->setCompiler($this->input->getOption('compiler'))
             ->debugMode(!$this->input->getOption('no-dev'))
             ->build();
     }

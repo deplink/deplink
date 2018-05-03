@@ -97,6 +97,41 @@ class PackageBuildChain
     }
 
     /**
+     * @param array $preferredCompilers
+     * @return Compiler
+     * @throws Exceptions\CompilerNotFoundException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     */
+    public function negotiateCompiler($preferredCompilers)
+    {
+        if(empty($this->compiler)) {
+            $this->compiler = $this->compilerFactory->negotiate($preferredCompilers);
+        }
+
+        return $this->compiler;
+    }
+
+    /**
+     * @param string|null $compiler
+     * @return $this
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     */
+    public function setCompiler($compiler)
+    {
+        if(!empty($compiler)) {
+            $this->compiler = $this->compilerFactory->make($compiler);
+        }
+
+        return $this;
+    }
+
+    /**
      * Set directory which contains previously
      * built dependencies (deplinks directory).
      *
@@ -142,7 +177,7 @@ class PackageBuildChain
 
         try {
             $this->package = $this->packageFactory->makeFromDir('.');
-            $this->compiler = $this->compilerFactory->negotiate($this->package->getCompilers());
+            $this->compiler = $this->negotiateCompiler($this->package->getCompilers());
 
             foreach ($this->getArchitectures() as $arch) {
                 $this->compiler->reset();
@@ -213,10 +248,10 @@ class PackageBuildChain
 
             if ($linkingType === 'static') {
                 $this->compiler->addStaticLibrary($libFile, []);
-            } else if ($linkingType === 'shared') {
+            } else if ($linkingType === 'dynamic') {
                 $this->compiler->addSharedLibrary($libFile, []);
             } else {
-                // TODO: Throw an exception
+                throw new BuildingPackageException("Unknown linking type: '$linkingType'.");
             }
         }
     }

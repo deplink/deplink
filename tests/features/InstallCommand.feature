@@ -257,6 +257,7 @@ Feature: Install command
     Given there is empty package
     When I run "deplink install package/not-exists --no-progress"
     Then the console output should contains "The 'package/not-exists' package was not found"
+    And I shouldn't have file "deplink.lock"
     And the "deplink.json" file shouldn't contains:
     """
     "package/not-exists"
