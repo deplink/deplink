@@ -12,8 +12,7 @@ Feature: Build command
       """
 
   Scenario: Project without dependencies
-    Given I am in "custom/name" directory
-    And there is empty package
+    Given there is empty package
     And there is "src/main.cpp" file with contents:
     """
     #include <cstdio>

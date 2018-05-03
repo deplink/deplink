@@ -288,3 +288,5 @@ Feature: Install command
 
   # TODO: add test for script at homepage (deplink.org)
   # TODO: add test for script from getting started page (first project)
+
+  # TODO: package exists in 2 repositories, which one was previously installed and locked in deplink.lock? First repository could add package later
