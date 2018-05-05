@@ -12,7 +12,7 @@ return [
      *
      * @link http://semver.org/
      */
-    'version' => '0.1.0',
+    'version' => 'dev-build',
 
     /**
      * Available commands via cli.
