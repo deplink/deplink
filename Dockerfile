@@ -14,6 +14,7 @@ RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 
 RUN echo "phar.readonly = Off" > /usr/local/etc/php/php.ini
+RUN sed -i "s/'version' => 'dev-build'/'version' => '(Docker)'/g" config/console.php
 RUN php composer.phar run-script build
 
 RUN echo 'php /opt/deplink/bin/deplink.phar $@' > /usr/local/bin/deplink
