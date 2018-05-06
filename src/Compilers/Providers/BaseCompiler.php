@@ -64,6 +64,11 @@ abstract class BaseCompiler implements Compiler
     protected $defaultArgs = [];
 
     /**
+     * @var string[]
+     */
+    protected $librariesDirs = [];
+
+    /**
      * Check whether compiler is supported
      * and can be used to perform compilations.
      *
@@ -136,6 +141,20 @@ abstract class BaseCompiler implements Compiler
     }
 
     /**
+     * Register directory in which shared
+     * libraries will be looking for.
+     *
+     * @param string $dir
+     * @return $this
+     */
+    public function addLibraryDir($dir)
+    {
+        $this->librariesDirs[] = $dir;
+
+        return $this;
+    }
+
+    /**
      * Link static library.
      *
      * Library can be specified using name or as a path with lib name.
@@ -198,6 +217,7 @@ abstract class BaseCompiler implements Compiler
         if (!is_null($includeDirs)) {
             $this->addIncludeDirs($includeDirs);
         }
+
         return $this;
     }
 
@@ -251,6 +271,7 @@ abstract class BaseCompiler implements Compiler
         $this->macros = [];
         $this->linkStatic = [];
         $this->linkDynamic = [];
+        $this->librariesDirs = [];
 
         return $this;
     }

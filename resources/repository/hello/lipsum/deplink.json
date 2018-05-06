@@ -1,8 +1,11 @@
 {
-    "name": "hello/world",
+    "name": "hello/lipsum",
     "type": "library",
+    "version": "v1.0.0",
+    "compilers": {
+        "g++": "*"
+    },
     "dependencies": {
         "hello/world": "*"
-    },
-    "version": "v1.0.0"
+    }
 }

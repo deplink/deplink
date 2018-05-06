@@ -61,6 +61,15 @@ interface Compiler
     public function addMacro($name, $value);
 
     /**
+     * Register directory in which shared
+     * libraries will be looking for.
+     *
+     * @param string $dir
+     * @return $this
+     */
+    public function addLibraryDir($dir);
+
+    /**
      * Link static library.
      *
      * Library can be specified using name or as a path with lib name.

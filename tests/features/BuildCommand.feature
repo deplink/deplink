@@ -174,5 +174,36 @@ Feature: Build command
     When I run "deplink build --compiler=g++ --no-progress"
     Then command should not exit with status code 0
 
+  Scenario: Build project with chained dependencies
+    Given there is package which requires:
+      | package      | version |
+      | chain/link-a | *       |
+    And the "chain/link-a" package requires:
+      | package      | version |
+      | chain/link-b | *       |
+    And the "chain/link-b" package requires:
+      | package      | version |
+      | chain/link-c | *       |
+    And there is "src/main.cpp" file with contents:
+      """
+      #include "autoload.h"
+
+      int main() {
+        printABC();
+        return 0;
+      }
+      """
+    When I run "deplink build --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 3 builds, 0 up-to-date
+        - Building chain/link-c
+        - Building chain/link-b
+        - Building chain/link-a
+      Building project... OK
+      """
+    When I run "deplink run"
+    Then the console output should contains "ABC"
+
   # TODO: If arch is set to x86 then dependencies should be build only using the x86 arch (only build/x86 dir should exists)
   # TODO: User friendly message when I select invalid compiler via --compiler option

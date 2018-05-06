@@ -64,7 +64,8 @@ class HierarchyFinder
             // before this package can be installed and build.
             $dependencies = $packages->get($name)->getLocal()->getDependencies();
             foreach ($dependencies as $dependency) {
-                $this->packages[$name][] = $dependency->getPackageName();
+                // Assign any value, used only keys to have fast access list.
+                $this->packages[$name][$dependency->getPackageName()] = true;
             }
         }
 

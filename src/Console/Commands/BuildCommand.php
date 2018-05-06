@@ -130,6 +130,8 @@ class BuildCommand extends BaseCommand
                 ->setArchitectures($this->package->getArchitectures())
                 ->debugMode(!$this->input->getOption('no-dev'))
                 ->build();
+
+            $this->copyLibraryToBuildDir($packageName);
         }
     }
 
@@ -137,25 +139,31 @@ class BuildCommand extends BaseCommand
     {
         $packages = $this->packagesManager->getInstalled();
         foreach ($packages->getPackagesNames() as $name) {
-            $package = $packages->get($name)->getLocal();
-            foreach ($this->package->getArchitectures() as $arch) {
-                $libFile = str_replace('/', '-', $package->getName());
-                $libPath = $this->fs->path('deplinks', $name, 'build', $arch, $libFile);
-                $destPath = $this->fs->path('build', $arch, $libFile);
+            $this->copyLibraryToBuildDir($name);
+        }
+    }
 
-                if (in_array('static', $package->getLinkingTypes())) {
-                    $this->fs->copyFile(
-                        $this->system->toStaticLibPath($libPath),
-                        $this->system->toStaticLibPath($destPath)
-                    );
-                }
+    private function copyLibraryToBuildDir($name)
+    {
+        $packages = $this->packagesManager->getInstalled();
+        $package = $packages->get($name)->getLocal();
+        foreach ($this->package->getArchitectures() as $arch) {
+            $libFile = str_replace('/', '-', $package->getName());
+            $libPath = $this->fs->path('deplinks', $name, 'build', $arch, $libFile);
+            $destPath = $this->fs->path('build', $arch, $libFile);
 
-                if (in_array('dynamic', $package->getLinkingTypes())) {
-                    $this->fs->copyFile(
-                        $this->system->toSharedLibPath($libPath),
-                        $this->system->toSharedLibPath($destPath)
-                    );
-                }
+            if (in_array('static', $package->getLinkingTypes())) {
+                $this->fs->copyFile(
+                    $this->system->toStaticLibPath($libPath),
+                    $this->system->toStaticLibPath($destPath)
+                );
+            }
+
+            if (in_array('dynamic', $package->getLinkingTypes())) {
+                $this->fs->copyFile(
+                    $this->system->toSharedLibPath($libPath),
+                    $this->system->toSharedLibPath($destPath)
+                );
             }
         }
     }

@@ -186,7 +186,11 @@ class GccCompiler extends BaseCompiler
         // Searching for libraries in dependency build directory
         // cannot be performed because compiler can find and use
         // library for different OS (compiler search lib by name).
-        $results = ['-L', "build/{$this->architecture}"];
+        $results = [];
+        foreach($this->librariesDirs as $libDir) {
+            $results[] = '-L';
+            $results[] = $libDir;
+        }
 
         foreach ($libraries as $libPath) {
             $libName = $this->fs->getFileName($libPath);
@@ -309,10 +313,12 @@ class GccCompiler extends BaseCompiler
         // Library file
         $this->run($this->cmd,
             '-shared',
-            self::ARCHITECTURE_OPTIONS[$this->architecture],
+            $objFiles,
             ['-o', $outputPath],
-            $this->getDefaultArgs(),
-            $objFiles
+            self::ARCHITECTURE_OPTIONS[$this->architecture],
+            $this->getMacrosCommandOptions(),
+            $this->getLibrariesCommandOptions(),
+            $this->getDefaultArgs()
         );
 
         return $outputPath;

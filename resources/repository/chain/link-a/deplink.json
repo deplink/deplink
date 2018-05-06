@@ -1,0 +1,7 @@
+{
+    "name": "chain/link-a",
+    "type": "library",
+    "dependencies": {
+        "chain/link-b": "*"
+    }
+}

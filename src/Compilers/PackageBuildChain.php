@@ -8,6 +8,7 @@ use Deplink\Environment\Filesystem;
 use Deplink\Environment\System;
 use Deplink\Packages\LocalPackage;
 use Deplink\Packages\PackageFactory;
+use Deplink\Packages\ValueObjects\DependencyObject;
 
 /**
  * Compile, assembly and link package.
@@ -107,7 +108,7 @@ class PackageBuildChain
      */
     public function negotiateCompiler($preferredCompilers)
     {
-        if(empty($this->compiler)) {
+        if (empty($this->compiler)) {
             $this->compiler = $this->compilerFactory->negotiate($preferredCompilers);
         }
 
@@ -124,7 +125,7 @@ class PackageBuildChain
      */
     public function setCompiler($compiler)
     {
-        if(!empty($compiler)) {
+        if (!empty($compiler)) {
             $this->compiler = $this->compilerFactory->make($compiler);
         }
 
@@ -181,6 +182,9 @@ class PackageBuildChain
 
             foreach ($this->getArchitectures() as $arch) {
                 $this->compiler->reset();
+                $this->compiler->addLibraryDir(
+                    $this->fs->path($this->previousWorkingDir, 'build', $arch)
+                );
 
                 $this->setCompilerOptions($arch);
                 $this->setCompilerMacros($arch);
@@ -240,6 +244,7 @@ class PackageBuildChain
             );
         }
 
+        $dependencies = $this->getWithNestedDependencies($dependencies);
         foreach ($dependencies as $dependency) {
             $linkingType = $dependency->getLinkingConstraint()[0];
 
@@ -254,6 +259,46 @@ class PackageBuildChain
                 throw new BuildingPackageException("Unknown linking type: '$linkingType'.");
             }
         }
+    }
+
+    /**
+     * @param DependencyObject[] $dependencies
+     * @return DependencyObject[]
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     * @throws \Deplink\Validators\Exceptions\JsonDecodeException
+     * @throws \Deplink\Validators\Exceptions\ValidationException
+     * @throws \InvalidArgumentException
+     * @throws \Seld\JsonLint\ParsingException
+     */
+    private function getWithNestedDependencies($dependencies)
+    {
+        // Get nested dependencies
+        $results = $dependencies;
+        foreach($dependencies as $dependency) {
+            $packagePath = "{$this->previousWorkingDir}/deplinks/{$dependency->getPackageName()}";
+            $details = $this->packageFactory->makeFromDir($packagePath);
+            $results = array_merge(
+                $results,
+                $this->getWithNestedDependencies($details->getDependencies())
+            );
+        }
+
+        // Remove duplicates
+        $filtered = [];
+        $registered = [];
+        foreach($results as $dependency) {
+            if(in_array($dependency->getPackageName(), $registered)) {
+                continue;
+            }
+
+            $registered[] = $dependency->getPackageName();
+            $filtered[] = $dependency;
+        }
+
+        return $filtered;
     }
 
     private function makeArtifacts($arch)
