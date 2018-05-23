@@ -116,7 +116,7 @@ class LocalDownloader implements Downloader
             $copiedCounter = 0;
             $filesCount = count($files);
             foreach ($files as $file) {
-                $progress->downloadingProgress($copiedCounter / $filesCount);
+                $progress->downloadingProgress(100 * $copiedCounter / $filesCount);
 
                 $from = $this->fs->path($this->from(), $file);
                 $to = $this->fs->path($this->destDir, $file);

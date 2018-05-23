@@ -70,6 +70,7 @@ class InstallationProgressFormater implements InstallingProgress
     public function removingProgress($packageName, $percentage)
     {
         if ($this->trackProgress) {
+            $percentage = ceil($percentage); // Convert floating point numbers to integer
             $this->output->write("  - Removing <info>$packageName</info>... $percentage%\r");
         }
     }
@@ -120,6 +121,7 @@ class InstallationProgressFormater implements InstallingProgress
             $sourceVersion = $this->normalizeVersion($sourceVersion);
             $targetVersion = $this->normalizeVersion($targetVersion);
 
+            $percentage = ceil($percentage); // Convert floating point numbers to integer
             $this->output->write("  - Updating <info>$packageName</info> (<info>$sourceVersion -> $targetVersion</info>)... $percentage%\r");
         }
     }
@@ -173,6 +175,7 @@ class InstallationProgressFormater implements InstallingProgress
         if ($this->trackProgress) {
             $version = $this->normalizeVersion($version);
 
+            $percentage = ceil($percentage); // Convert floating point numbers to integer
             $this->output->write("  - Installing <info>$packageName</info> (<info>$version</info>)... $percentage%\r");
         }
     }
