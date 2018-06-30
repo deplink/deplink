@@ -92,4 +92,12 @@ class CommandContext extends BaseContext
 
         Assert::assertContains($expected, $given);
     }
+
+    /**
+     * @Then the console output should be empty
+     */
+    public function theConsoleOutputShouldBeEmpty()
+    {
+        return empty(trim($this->output));
+    }
 }

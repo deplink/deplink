@@ -44,6 +44,9 @@ Feature: Build command
     And there is package which requires:
       | package     | version |
       | hello/world | *       |
+    And local repository contains packages:
+      | package     | version |
+      | hello/world | 1.0.0   |
     And there is "src/main.cpp" file with contents:
       """
       #include "autoload.h"

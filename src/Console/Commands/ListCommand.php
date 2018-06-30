@@ -70,6 +70,8 @@ class ListCommand extends BaseCommand
 
         $state = $this->resolver->getResolvedStates()[0];
         $installed = $this->packagesManager->getInstalled();
+
+        $state->getPackages()->sortByName();
         foreach ($state->getPackages() as $package) {
             $this->output->write("<info>{$package->getName()}</info> (<info>{$package->getVersion()}</info>)");
 

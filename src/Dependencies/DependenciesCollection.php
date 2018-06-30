@@ -100,6 +100,11 @@ class DependenciesCollection implements Iterator
         return $this;
     }
 
+    public function sortByName()
+    {
+        ksort($this->dependencies);
+    }
+
     /**
      * Return the current element
      *

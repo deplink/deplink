@@ -1,4 +1,5 @@
 {
     "name": "chain/link-c",
-    "type": "library"
+    "type": "library",
+    "version": "v1.0.0"
 }

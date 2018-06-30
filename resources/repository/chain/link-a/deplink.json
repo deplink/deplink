@@ -3,5 +3,6 @@
     "type": "library",
     "dependencies": {
         "chain/link-b": "*"
-    }
+    },
+    "version": "v1.1.0"
 }
