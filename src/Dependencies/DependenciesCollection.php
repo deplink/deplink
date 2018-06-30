@@ -6,8 +6,9 @@ use Deplink\Dependencies\Excpetions\DependencyNotExistsException;
 use Deplink\Dependencies\ValueObjects\DependencyObject;
 use Deplink\Packages\LocalPackage;
 use Deplink\Packages\RemotePackage;
+use Iterator;
 
-class DependenciesCollection
+class DependenciesCollection implements Iterator
 {
     /**
      * @var DependencyObject[]
@@ -97,5 +98,67 @@ class DependenciesCollection
         }
 
         return $this;
+    }
+
+    /**
+     * Return the current element
+     *
+     * @link http://php.net/manual/en/iterator.current.php
+     * @return DependencyObject Can return any type.
+     * @since 5.0.0
+     */
+    public function current()
+    {
+        return current($this->dependencies);
+    }
+
+    /**
+     * Move forward to next element
+     *
+     * @link http://php.net/manual/en/iterator.next.php
+     * @return void Any returned value is ignored.
+     * @since 5.0.0
+     */
+    public function next()
+    {
+        next($this->dependencies);
+    }
+
+    /**
+     * Return the key of the current element
+     *
+     * @link http://php.net/manual/en/iterator.key.php
+     * @return string Scalar on success, or null on failure.
+     * @since 5.0.0
+     */
+    public function key()
+    {
+        return key($this->dependencies);
+    }
+
+    /**
+     * Checks if current position is valid
+     *
+     * @link http://php.net/manual/en/iterator.valid.php
+     * @return boolean The return value will be casted to boolean and then evaluated.
+     * Returns true on success or false on failure.
+     * @since 5.0.0
+     */
+    public function valid()
+    {
+        $key = key($this->dependencies);
+        return ($key !== null && $key !== false);
+    }
+
+    /**
+     * Rewind the Iterator to the first element
+     *
+     * @link http://php.net/manual/en/iterator.rewind.php
+     * @return void Any returned value is ignored.
+     * @since 5.0.0
+     */
+    public function rewind()
+    {
+        reset($this->dependencies);
     }
 }
