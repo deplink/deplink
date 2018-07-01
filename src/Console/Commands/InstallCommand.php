@@ -107,12 +107,15 @@ class InstallCommand extends BaseCommand
 
     private function updateProjectPackage()
     {
+        // Backup current version of deplink.json file.
+        $this->packageFile = $this->fs->readFile('deplink.json');
+
+        // Skip editing deplink.json file if "package" argument is missing.
         $packages = $this->input->getArgument('package');
         if (empty($packages)) {
             return;
         }
 
-        $this->packageFile = $this->fs->readFile('deplink.json');
         $file = json_decode($this->packageFile);
         $section = $this->input->getOption('dev') ? 'dev-dependencies' : 'dependencies';
 

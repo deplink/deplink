@@ -263,6 +263,30 @@ Feature: Install command
     "package/not-exists"
     """
 
+  Scenario: Fix empty deplink.json file after installation
+    Given there is "deplink.json" file with contents:
+      """
+      {
+          "name": "org/package",
+          "type": "project",
+          "dependencies": {
+              "_/this-package-should-not-exists": "*"
+          }
+      }
+      """
+    When I run "deplink install"
+    Then command should not exit with status code 0
+    And I should have file "deplink.json" with contents:
+      """
+      {
+          "name": "org/package",
+          "type": "project",
+          "dependencies": {
+              "_/this-package-should-not-exists": "*"
+          }
+      }
+      """
+
   # TODO: check if cache directory is created in home directory (no in poject dir "~" - issue with tilde symbol)
 
   # TODO: Install locked version of the dependencies (require remote repository)
