@@ -81,4 +81,12 @@ class DependenciesTreeState
 
         return implode(' ', $this->constraints[$packageName]);
     }
+
+    /**
+     * @return array
+     */
+    public function getConstraints()
+    {
+        return $this->constraints;
+    }
 }

@@ -10,6 +10,7 @@ use Deplink\Dependencies\Installer;
 use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
 use Deplink\Resolvers\DependenciesTreeResolver;
+use Deplink\Resolvers\LocalStateValidator;
 use DI\Container;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -40,16 +41,28 @@ class InstallCommand extends BaseCommand
     private $packageFile;
 
     /**
+     * @var LocalStateValidator
+     */
+    private $localStateValidator;
+
+    /**
      * InstallCommand constructor.
      *
      * @param Filesystem $fs
      * @param LockFactory $lockFactory
      * @param Container $di
+     * @param LocalStateValidator $localStateValidator
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    public function __construct(Filesystem $fs, LockFactory $lockFactory, Container $di)
+    public function __construct(
+        Filesystem $fs,
+        LockFactory $lockFactory,
+        Container $di,
+        LocalStateValidator $localStateValidator
+    )
     {
         $this->lockFactory = $lockFactory;
+        $this->localStateValidator = $localStateValidator;
 
         parent::__construct($fs, $di);
     }
@@ -165,8 +178,12 @@ class InstallCommand extends BaseCommand
     {
         $this->output->write('Resolving dependencies tree... ');
 
-        $manager = $this->di->get(DependenciesTreeResolver::class);
-        $manager->snapshot(!$this->input->getOption('no-dev'));
+        $includeDev = !$this->input->getOption('no-dev');
+        $this->localStateValidator->snapshot($includeDev);
+        if(!$this->localStateValidator->isValid()) {
+            $manager = $this->di->get(DependenciesTreeResolver::class);
+            $manager->snapshot($includeDev);
+        }
 
         $this->output->writeln('<info>OK</info>');
     }

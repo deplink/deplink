@@ -171,7 +171,7 @@ Feature: Install command
       """
     And command should exit with status code 1
 
-  Scenario: Update package if locked version is unavailable
+  Scenario: Update package after requirements change
     Given there is package which requires:
       | package   | version |
       | basic/log | *       |
@@ -182,6 +182,9 @@ Feature: Install command
     And upgrade packages:
       | package   | version |
       | basic/log | v2.0.0  |
+    And change global package requirements:
+      | package   | version |
+      | basic/log | 2.*     |
     And I run "deplink install --no-progress"
     Then the console output should contains:
       """

@@ -11,6 +11,7 @@ use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
 use Deplink\Packages\PackageFactory;
 use Deplink\Resolvers\DependenciesTreeResolver;
+use Deplink\Resolvers\LocalStateValidator;
 
 class Installer
 {
@@ -55,6 +56,11 @@ class Installer
     private $packageFactory;
 
     /**
+     * @var LocalStateValidator
+     */
+    private $localStateValidator;
+
+    /**
      * Installer constructor.
      *
      * @param DependenciesTreeResolver $treeResolver
@@ -62,19 +68,22 @@ class Installer
      * @param PackageFactory $packageFactory
      * @param LockFactory $lockFactory
      * @param Filesystem $fs
+     * @param LocalStateValidator $localStateValidator
      */
     public function __construct(
         DependenciesTreeResolver $treeResolver,
         InstalledPackagesManager $installedPackages,
         PackageFactory $packageFactory,
         LockFactory $lockFactory,
-        Filesystem $fs
+        Filesystem $fs,
+        LocalStateValidator $localStateValidator
     ) {
         $this->treeResolver = $treeResolver;
         $this->installedPackages = $installedPackages;
         $this->packageFactory = $packageFactory;
         $this->lockFactory = $lockFactory;
         $this->fs = $fs;
+        $this->localStateValidator = $localStateValidator;
     }
 
     /**
@@ -105,7 +114,8 @@ class Installer
         }
 
         // Prepare for installation
-        if (!$this->treeResolver->hasSnapshot()) {
+        if (!$this->localStateValidator->isValid()
+            && !$this->treeResolver->hasSnapshot()) {
             $this->treeResolver->snapshot();
         }
 
@@ -137,7 +147,7 @@ class Installer
      */
     private function classifyDependencies()
     {
-        $required = $this->treeResolver->getResolvedStates()[0]->getPackages();
+        $required = $this->getState()->getPackages();
         $installed = $this->installedPackages->getInstalled();
 
         $this->installs = [];
@@ -277,5 +287,17 @@ class Installer
         }
 
         return $result;
+    }
+
+    /**
+     * @return \Deplink\Resolvers\DependenciesTreeState
+     */
+    protected function getState()
+    {
+        if($this->localStateValidator->isValid()) {
+            return $this->localStateValidator->getState();
+        }
+
+        return $this->treeResolver->getResolvedStates()[0];
     }
 }
