@@ -7,9 +7,9 @@ return [
      * - Windows: %LOCALAPPDATA%/Deplink
      * - Linux: ~/.deplink
      */
-    'downloaders' => [
+    'packages' => [
         'remote' => [
-            'dir' => 'packages',
+            'dir' => 'packages/remote/{url}',
         ],
     ],
 
