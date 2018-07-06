@@ -10,7 +10,7 @@ use Deplink\Dependencies\Installer;
 use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
 use Deplink\Resolvers\DependenciesTreeResolver;
-use Deplink\Resolvers\LocalStateValidator;
+use Deplink\Resolvers\LocalStateResolver;
 use DI\Container;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,7 +41,7 @@ class InstallCommand extends BaseCommand
     private $packageFile;
 
     /**
-     * @var LocalStateValidator
+     * @var LocalStateResolver
      */
     private $localStateValidator;
 
@@ -51,14 +51,14 @@ class InstallCommand extends BaseCommand
      * @param Filesystem $fs
      * @param LockFactory $lockFactory
      * @param Container $di
-     * @param LocalStateValidator $localStateValidator
+     * @param LocalStateResolver $localStateValidator
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
         Filesystem $fs,
         LockFactory $lockFactory,
         Container $di,
-        LocalStateValidator $localStateValidator
+        LocalStateResolver $localStateValidator
     )
     {
         $this->lockFactory = $lockFactory;

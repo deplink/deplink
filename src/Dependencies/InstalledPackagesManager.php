@@ -121,10 +121,10 @@ class InstalledPackagesManager
         $downloaded = $this->listDownloadedPackages();
 
         // Detect ambiguous packages.
-        $installedPackagesNames = array_keys($locked);
+        $lockedPackagesNames = array_keys($locked);
         $this->ambiguous = array_merge(
-            array_diff($installedPackagesNames, $downloaded), // Marked as installed, but not exists in dir structure.
-            array_diff($downloaded, $installedPackagesNames) // Installed, but not contains information about version.
+            //array_diff($lockedPackagesNames, $downloaded), // Locked, but not exists in dir structure.
+            array_diff($downloaded, $lockedPackagesNames) // Installed, but not contains information about version.
         );
 
         // Mark other packages as installed.

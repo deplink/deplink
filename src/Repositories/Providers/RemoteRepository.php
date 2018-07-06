@@ -3,6 +3,9 @@
 namespace Deplink\Repositories\Providers;
 
 use Deplink\Downloaders\DownloaderFactory;
+use Deplink\Environment\Cache;
+use Deplink\Environment\Config;
+use Deplink\Environment\Filesystem;
 use Deplink\Packages\PackageFactory;
 use Deplink\Packages\RemotePackage;
 use Deplink\Repositories\Exceptions\PackageNotFoundException;
@@ -56,12 +59,30 @@ class RemoteRepository implements Repository
     private $url;
 
     /**
+     * @var Cache
+     */
+    private $cache;
+
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var Filesystem
+     */
+    private $fs;
+
+    /**
      * LocalRepository constructor.
      *
      * @param ClientInterface $client
      * @param PackageFactory $packageFactory
      * @param VersionFinderFactory $versionFinderFactory
      * @param DownloaderFactory $downloaderFactory
+     * @param Cache $cache
+     * @param Config $config
+     * @param Filesystem $fs
      * @param string $src Full repository address (e.g. https://repo.deplink.org/)
      */
     public function __construct(
@@ -69,24 +90,68 @@ class RemoteRepository implements Repository
         PackageFactory $packageFactory,
         VersionFinderFactory $versionFinderFactory,
         DownloaderFactory $downloaderFactory,
+        Cache $cache,
+        Config $config,
+        Filesystem $fs,
         $src
     ) {
         $this->client = $client;
         $this->packageFactory = $packageFactory;
         $this->versionFinderFactory = $versionFinderFactory;
         $this->downloaderFactory = $downloaderFactory;
+        $this->cache = $cache;
+        $this->config = $config;
+        $this->fs = $fs;
         $this->url = $src;
+    }
+
+    /**
+     * @param string $package
+     * @return string
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     */
+    protected function getArchiveCachePath($package)
+    {
+        $dir = $this->config->get('cache.packages.remote.dir');
+        $path = $this->cache->query("$dir/$package", [
+            'url' => $this->url,
+        ]);
+
+        return "$path";
+    }
+
+    /**
+     * @param $package
+     * @return bool
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
+     */
+    private function hasInCache($package)
+    {
+        $archiveDir = $this->getArchiveCachePath($package);
+        if(!$this->fs->existsDir($archiveDir)) {
+            return false;
+        }
+
+        return !empty($this->fs->listFiles($archiveDir));
     }
 
     /**
      * @param string $package
      * @return bool
      * @throws UnreachableRemoteRepositoryException
-     * @throws \RuntimeException
+     * @throws \Deplink\Environment\Exceptions\ConfigNotExistsException
+     * @throws \Deplink\Environment\Exceptions\InvalidPathException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \RuntimeException
      */
     public function has($package)
     {
+        if ($this->hasInCache($package)) {
+            return true;
+        }
+
         $uri = "{$this->url}/api/v1/@$package";
         $response = $this->client->request('options', $uri); // FIXME: , ['verify' => false]
         if ($response->getStatusCode() !== 200) {

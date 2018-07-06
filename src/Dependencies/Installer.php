@@ -11,7 +11,7 @@ use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
 use Deplink\Packages\PackageFactory;
 use Deplink\Resolvers\DependenciesTreeResolver;
-use Deplink\Resolvers\LocalStateValidator;
+use Deplink\Resolvers\LocalStateResolver;
 
 class Installer
 {
@@ -56,7 +56,7 @@ class Installer
     private $packageFactory;
 
     /**
-     * @var LocalStateValidator
+     * @var LocalStateResolver
      */
     private $localStateValidator;
 
@@ -68,7 +68,7 @@ class Installer
      * @param PackageFactory $packageFactory
      * @param LockFactory $lockFactory
      * @param Filesystem $fs
-     * @param LocalStateValidator $localStateValidator
+     * @param LocalStateResolver $localStateValidator
      */
     public function __construct(
         DependenciesTreeResolver $treeResolver,
@@ -76,7 +76,7 @@ class Installer
         PackageFactory $packageFactory,
         LockFactory $lockFactory,
         Filesystem $fs,
-        LocalStateValidator $localStateValidator
+        LocalStateResolver $localStateValidator
     ) {
         $this->treeResolver = $treeResolver;
         $this->installedPackages = $installedPackages;
