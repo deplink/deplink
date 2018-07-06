@@ -148,4 +148,13 @@ class FilesystemContext extends BaseContext
         $found = $count - $left;
         Assert::assertLessThanOrEqual(0, $left, "Found $found of $count files, $left files left.");
     }
+
+    /**
+     * @Given I remove :dir folder
+     */
+    public function iRemoveFolder($dir)
+    {
+        $this->fs->removeDir($dir);
+        Assert::assertDirectoryNotExists($dir);
+    }
 }

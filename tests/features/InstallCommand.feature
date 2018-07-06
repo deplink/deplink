@@ -290,6 +290,23 @@ Feature: Install command
       }
       """
 
+  Scenario: Do not remove packages which are not installed
+    # Issue #15: https://github.com/deplink/deplink/issues/15
+    Given there is package which requires:
+      | package   | version |
+      | basic/log | *       |
+    And local repository contains packages:
+      | package   | version |
+      | basic/log | v1.0.0  |
+    When I run "deplink install --no-progress"
+    And I remove "deplinks" folder
+    And I run "deplink install --no-progress"
+    Then the console output should contains:
+      """
+      Dependencies: 1 installs, 0 updates, 0 removals
+        - Installing basic/log (v1.0.0)
+      """
+
   # TODO: check if cache directory is created in home directory (no in poject dir "~" - issue with tilde symbol)
 
   # TODO: Install locked version of the dependencies (require remote repository)
