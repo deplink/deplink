@@ -69,6 +69,19 @@ class RemoteRepositoryVersionFinder extends BaseVersionFinder
     }
 
     /**
+     * Get latest available string.
+     *
+     * @return string
+     * @throws UnreachableRemoteRepositoryException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \RuntimeException
+     */
+    public function latest()
+    {
+        return array_pop($this->comparator->sort($this->get()));
+    }
+
+    /**
      * Request endpoint to retrieve package available versions.
      *
      * @return string[]

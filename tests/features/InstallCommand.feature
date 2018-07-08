@@ -249,6 +249,7 @@ Feature: Install command
       """
 
   @linux
+  @remote
   Scenario: Prevents creating cache in project directory
     # There was an error on Linux which causes to store cached packages
     # in the project directory in "~" folder (it should point to home dir).
@@ -307,13 +308,88 @@ Feature: Install command
         - Installing basic/log (v1.0.0)
       """
 
-  # TODO: check if cache directory is created in home directory (no in poject dir "~" - issue with tilde symbol)
+  Scenario: Require version compatible to the installed one
+    # Issue #9: https://github.com/deplink/deplink/issues/9
+    Given there is empty package
+    And local repository contains packages:
+      | package     | version |
+      | hello/world | v1.0.0  |
+    When I run "deplink install hello/world --no-progress"
+    Then I should have file "deplink.json" with contents (ignore whitespaces):
+      """
+      "dependencies": {
+        "hello/world": "^1.0.0"
+      }
+      """
+
+  Scenario: Check package installation with --dev option
+    Given there is empty package
+    And local repository contains packages:
+      | package     | version |
+      | hello/world | v1.0.0  |
+    When I run "deplink install --dev hello/world"
+    Then I should have file "deplink.json" with contents (ignore whitespaces):
+      """
+      "dev-dependencies": {
+        "hello/world": "^1.0.0"
+      }
+      """
+
+  Scenario Outline: Custom package constraints
+    Given there is empty package
+    And local repository contains packages:
+      | package     | version |
+      | hello/world | v1.0.0  |
+    When I run "deplink install <argument>"
+    Then I should have file "deplink.json" with contents (ignore whitespaces):
+      """
+      "dependencies": {
+        <json>
+      }
+      """
+
+    Examples:
+      | argument                      | json                           |
+      | hello/world:1.*:static        | "hello/world": "1.*:static"    |
+      | hello/world:1.*               | "hello/world": "1.*"           |
+      | hello/world::static           | "hello/world": "^1.0.0:static" |
+      | hello/world:* hello/world:1.* | "hello/world": "1.*"           |
+
+  Scenario: Multiple custom package constraints
+    Given there is empty package
+    And local repository contains packages:
+      | package    | version |
+      | basic/log  | v1.0.0  |
+      | basic/unit | v1.0.0  |
+    When I run "deplink install basic/log basic/unit::static"
+    Then I should have file "deplink.json" with contents (ignore whitespaces):
+      """
+      "dependencies": {
+        "basic/log": "^1.0.0",
+        "basic/unit": "^1.0.0:static"
+      }
+      """
+
+  Scenario Outline: Invalid custom package constraints
+    Given there is empty package
+    And local repository contains packages:
+      | package     | version |
+      | hello/world | v1.0.0  |
+    When I run "deplink install <argument>"
+    Then command should not exit with status code 0
+
+    Examples:
+      | argument                |
+      | hello/world:1.*:static: |
+      | hello/world::1.*        |
+      | hello/world:static      |
+      | hello/world::           |
+      | hello/world basic/log:: |
 
   # TODO: Install locked version of the dependencies (require remote repository)
   # TODO: cleanup deplinks directory if installed.lock file is missing
   # TODO: delete mismatches between installed.lock and directory structure
 
-  # TODO: specify new package to install
   # TODO: install multiple libs at once
   # TODO: check packages compiler compatibility
   # TODO: check packages platform compatibility

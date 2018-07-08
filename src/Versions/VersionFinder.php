@@ -21,6 +21,13 @@ interface VersionFinder
     public function get();
 
     /**
+     * Get latest available string.
+     *
+     * @return string
+     */
+    public function latest();
+
+    /**
      * Get versions which satisfy constraint.
      *
      * @param string $constraint Version constraint (eq. ">= 5.3").

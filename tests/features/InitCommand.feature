@@ -72,6 +72,7 @@ Feature: Init command
       | org//package |
       | __/package   |
       | org/___      |
+      | org/pac:kage |
 
   Scenario: Working directory not found
     When I run "deplink init -d ./not_exists"

@@ -3,12 +3,14 @@
 namespace Deplink\Console\Commands;
 
 use Deplink\Console\BaseCommand;
+use Deplink\Console\Commands\Arguments\PackageArgument;
 use Deplink\Console\Commands\Output\InstallationProgressFormater;
 use Deplink\Dependencies\DependenciesCollection;
 use Deplink\Dependencies\InstalledPackagesManager;
 use Deplink\Dependencies\Installer;
 use Deplink\Environment\Filesystem;
 use Deplink\Locks\LockFactory;
+use Deplink\Repositories\RepositoryFactory;
 use Deplink\Resolvers\DependenciesTreeResolver;
 use Deplink\Resolvers\LocalStateResolver;
 use DI\Container;
@@ -46,23 +48,30 @@ class InstallCommand extends BaseCommand
     private $localStateValidator;
 
     /**
+     * @var RepositoryFactory
+     */
+    private $repositoryFactory;
+
+    /**
      * InstallCommand constructor.
      *
      * @param Filesystem $fs
      * @param LockFactory $lockFactory
      * @param Container $di
      * @param LocalStateResolver $localStateValidator
+     * @param RepositoryFactory $repositoryFactory
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
         Filesystem $fs,
         LockFactory $lockFactory,
         Container $di,
-        LocalStateResolver $localStateValidator
-    )
-    {
+        LocalStateResolver $localStateValidator,
+        RepositoryFactory $repositoryFactory
+    ) {
         $this->lockFactory = $lockFactory;
         $this->localStateValidator = $localStateValidator;
+        $this->repositoryFactory = $repositoryFactory;
 
         parent::__construct($fs, $di);
     }
@@ -124,11 +133,12 @@ class InstallCommand extends BaseCommand
         $this->packageFile = $this->fs->readFile('deplink.json');
 
         // Skip editing deplink.json file if "package" argument is missing.
-        $packages = $this->input->getArgument('package');
-        if (empty($packages)) {
+        $arguments = $this->input->getArgument('package');
+        if (empty($arguments)) {
             return;
         }
 
+        // Establish section name ("dev-dependencies" or "dependencies").
         $file = json_decode($this->packageFile);
         $section = $this->input->getOption('dev') ? 'dev-dependencies' : 'dependencies';
 
@@ -136,15 +146,36 @@ class InstallCommand extends BaseCommand
             $file->{$section} = (object)[];
         }
 
-        // TODO: Error if dependency already defined (in any of sections; message about update command??)
+        $repositories = $this->repositoryFactory->makeCollection($this->package->getRepositories());
+        foreach ($arguments as $argument) {
+            $package = PackageArgument::parse($argument);
+            // TODO: Error if dependency already defined in second section (e.g. exists in dependencies and now added to dev-dependencies)
 
-        foreach ($packages as $package) {
-            // FIXME: Read constraint from command or use by default "^<latest-version>"
-            $file->{$section}->{$package} = '*';
+            if(!$package->hasVersion()) {
+                $remote = $repositories->find($package->getName());
+                $version = preg_replace('/^(v\.|v)/i', '', $remote->getVersionFinder()->latest());
+                $package->setVersion("^$version");
+            }
+
+            $file->{$section}->{$package->getName()} = $package->getVersion();
+            if($package->hasLinkingType()) {
+                $file->{$section}->{$package->getName()} .= ":{$package->getLinkingType()}";
+            }
         }
 
         $json = json_encode($file, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $this->fs->writeFile('deplink.json', $json);
+    }
+
+    private function parseArgument($argument)
+    {
+        $parts = explode(':', $argument, 2);
+        $package = $parts[0];
+        $constraint = isset($parts[1]) ? $parts[1] : null;
+
+
+
+        return [$package, $constraint];
     }
 
     private function revertProjectPackage()
@@ -180,7 +211,7 @@ class InstallCommand extends BaseCommand
 
         $includeDev = !$this->input->getOption('no-dev');
         $this->localStateValidator->snapshot($includeDev);
-        if(!$this->localStateValidator->isValid()) {
+        if (!$this->localStateValidator->isValid()) {
             $manager = $this->di->get(DependenciesTreeResolver::class);
             $manager->snapshot($includeDev);
         }

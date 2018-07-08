@@ -76,6 +76,19 @@ class FilesystemContext extends BaseContext
     }
 
     /**
+     * @Then /^I should have file "([^"]*)" with contents \(ignore whitespaces\):$/
+     */
+    public function iShouldHaveFileWithContentsIgnoreWhitespaces($file, PyStringNode $contents)
+    {
+        Assert::assertFileExists($file);
+
+        $expected = preg_replace('/\s+/i', ' ', $contents->getRaw());
+        $current = preg_replace('/\s+/i', ' ', $this->fs->readFile($file));
+
+        Assert::assertContains($expected, $current);
+    }
+
+    /**
      * @Given directory :dir exists
      */
     public function directoryExists($dir)

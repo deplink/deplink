@@ -42,4 +42,14 @@ class LocalPackageVersionFinder extends BaseVersionFinder
     {
         return [$this->package->getVersion() ?: '0.1.0'];
     }
+
+    /**
+     * Get latest available string.
+     *
+     * @return string
+     */
+    public function latest()
+    {
+        return array_pop($this->get());
+    }
 }
