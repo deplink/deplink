@@ -208,5 +208,35 @@ Feature: Build command
     When I run "deplink run"
     Then the console output should contains "ABC"
 
+  Scenario: Print commands in verbose mode
+    # Example of the full g++ output
+    # (include absolute paths which was truncated in test):
+    #
+    # Building project...
+    # g++ -x c++ src/main.cpp -m32 -o build/x86/org-package.exe -g -save-temps=obj -L /path/to/project/build/x86 -I "include" -I "deplinks" -Wall -O3
+    # g++ -x c++ src/main.cpp -m64 -o build/x64/org-package.exe -g -save-temps=obj -L /path/to/project/build/x64 -I "include" -I "deplinks" -Wall -O3
+    # OK
+    Given there is empty package
+    And there is "src/main.cpp" file with contents:
+    """
+    #include <cstdio>
+
+    int main() {
+      printf("Hello, World!");
+      return 0;
+    }
+    """
+    When I run "deplink build --verbose --no-progress"
+    Then the console output should contains:
+      """
+      Building project...
+      g++ -x c++ src/main.cpp -m32 -o build/x86/org-package.exe
+      """
+    And the console output should contains:
+      """
+      -I "include" -I "deplinks" -Wall -O3
+      OK
+      """
+
   # TODO: If arch is set to x86 then dependencies should be build only using the x86 arch (only build/x86 dir should exists)
   # TODO: User friendly message when I select invalid compiler via --compiler option

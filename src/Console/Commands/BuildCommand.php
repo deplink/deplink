@@ -3,12 +3,14 @@
 namespace Deplink\Console\Commands;
 
 use Deplink\Compilers\CompilerFactory;
+use Deplink\Compilers\Events\CompilerCommandEvent;
 use Deplink\Console\BaseCommand;
 use Deplink\Dependencies\HierarchyFinder;
 use Deplink\Dependencies\InstalledPackagesManager;
 use Deplink\Dependencies\ValueObjects\DependencyObject;
 use Deplink\Environment\Filesystem;
 use Deplink\Environment\System;
+use Deplink\Events\Bus;
 use DI\Container;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
@@ -36,6 +38,11 @@ class BuildCommand extends BaseCommand
     private $system;
 
     /**
+     * @var Bus
+     */
+    private $bus;
+
+    /**
      * InitCommand constructor.
      *
      * @param Filesystem $fs
@@ -43,7 +50,8 @@ class BuildCommand extends BaseCommand
      * @param CompilerFactory $factory
      * @param HierarchyFinder $hierarchyFinder
      * @param InstalledPackagesManager $packagesManager
-     * @throws \Symfony\Component\Console\Exception\LogicException
+     * @param System $system
+     * @param Bus $bus
      */
     public function __construct(
         Filesystem $fs,
@@ -51,13 +59,15 @@ class BuildCommand extends BaseCommand
         CompilerFactory $factory,
         HierarchyFinder $hierarchyFinder,
         InstalledPackagesManager $packagesManager,
-        System $system
+        System $system,
+        Bus $bus
     )
     {
         $this->factory = $factory;
         $this->hierarchyFinder = $hierarchyFinder;
         $this->packagesManager = $packagesManager;
         $this->system = $system;
+        $this->bus = $bus;
 
         parent::__construct($fs, $di);
     }
@@ -74,6 +84,12 @@ class BuildCommand extends BaseCommand
                 'Use the given directory as working directory', '.')
             ->addOption('compiler', 'c', InputOption::VALUE_REQUIRED,
                 'Force to use specified compiler regardless to the deplink.json settings');
+
+        $this->bus->listen(CompilerCommandEvent::class, function(CompilerCommandEvent $event) {
+            if($this->output->isVerbose()) {
+                $this->output->writeln($event->getCommand());
+            }
+        });
     }
 
     /**
@@ -92,8 +108,11 @@ class BuildCommand extends BaseCommand
         $this->buildDependencies();
         $this->copyLibrariesToBuildDir();
 
-        $this->output->write('Building project... ');
+        $writeMethod = $this->output->isVerbose() ? 'writeln' : 'write';
+        $this->output->{$writeMethod}('Building project... ');
+
         $this->buildProject();
+
         $this->output->writeln('<info>OK</info>');
     }
 

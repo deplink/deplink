@@ -3,7 +3,9 @@
 namespace Deplink\Compilers\Providers;
 
 use Deplink\Compilers\Compiler;
+use Deplink\Compilers\Events\CompilerCommandEvent;
 use Deplink\Compilers\Exceptions\BuildingPackageException;
+use Deplink\Events\Bus;
 use Symfony\Component\Process\Process;
 
 abstract class BaseCompiler implements Compiler
@@ -67,6 +69,16 @@ abstract class BaseCompiler implements Compiler
      * @var string[]
      */
     protected $librariesDirs = [];
+
+    /**
+     * @var Bus
+     */
+    protected $bus;
+
+    public function  __construct(Bus $bus)
+    {
+        $this->bus = $bus;
+    }
 
     /**
      * Check whether compiler is supported
@@ -232,6 +244,7 @@ abstract class BaseCompiler implements Compiler
         };
 
         $command = implode(' ', array_map($arrToString, $args));
+        $this->bus->emit(new CompilerCommandEvent($command));
 
         $process = new Process($command);
         $process->run(function ($type, $buffer) {
