@@ -6,6 +6,7 @@ use Deplink\Compilers\Exceptions\CompilerNotFoundException;
 use Deplink\Compilers\Exceptions\UnknownCompilerVersionException;
 use Deplink\Environment\Filesystem;
 use Deplink\Environment\System;
+use Deplink\Events\Bus;
 
 /**
  * @link https://gcc.gnu.org/
@@ -51,12 +52,15 @@ class GccCompiler extends BaseCompiler
      *
      * @param Filesystem $fs
      * @param System $system
+     * @param Bus $bus
      */
-    public function __construct(Filesystem $fs, System $system)
+    public function __construct(Filesystem $fs, System $system, Bus $bus)
     {
         $this->fs = $fs;
         $this->system = $system;
         $this->prepare();
+
+        parent::__construct($bus);
     }
 
     /**
